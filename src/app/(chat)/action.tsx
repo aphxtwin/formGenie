@@ -29,7 +29,7 @@ async function submitUserMessage(userInput: string) {
             content: userInput,
         },
     ]);
-
+    console.log(aiState.get())
     // the render() cretaes a generated, streamable UI
     const ui = render({
         model:"gpt-3.5-turbo",
@@ -41,9 +41,7 @@ async function submitUserMessage(userInput: string) {
             content:
                 `
                 You are the perfect tool for build forms for a wide range of uses.
-                You can create forms for collecting user data, for example, or even a simple  
-                waitlist for a website or a form for collecting feedback from users,
-                or for conducting surveys.
+                You can create the perfect form based on the user query.
                 Your response is divided in 2 parts: First is an explanation of your suggestions
                 and why are the perfect fit for the user requirements [is just a natural language response].The second part is a neat and
                 easy to understand react component of your suggested form.  
@@ -54,6 +52,8 @@ async function submitUserMessage(userInput: string) {
                 If the user queries for something that is not a form, provide reject the query very gently
                 `,
         },
+        ...aiState.get().map((message:any) => ({ role: message.role, content: message.content } )),
+
         ],
         text: ({ content, done }) => {
             // When it's the final content, mark the state as done and ready for the client to access.

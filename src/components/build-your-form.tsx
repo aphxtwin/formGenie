@@ -41,7 +41,6 @@ const BuildYourForm: React.FC = () => {
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
-    const localStorage = window.localStorage;
     const {submitUserMessage} = useActions();
     const [buildingSession, setBuildingSession] = useState(false)
 
@@ -85,7 +84,6 @@ const BuildYourForm: React.FC = () => {
           ]);
            if (res) {
                 setBuildingSession(true)
-                localStorage.setItem('content', value)
             }
         } catch (error) {
             console.error(error)
@@ -105,6 +103,7 @@ const BuildYourForm: React.FC = () => {
                     isTheFirstMessage={true}
                     handleInputChange={handleInputChange} 
                     handleSubmit={handleSubmission} 
+                    className='w-[515px] max-h-[200px]'
                     input={input} 
                     flashlight={flashlight}/>
             </div>
