@@ -16,6 +16,7 @@ function Spinner() {
     return <AiResponse content={<div className='animate-pulse'>Loading...</div>}/>
 }
 
+
 async function submitUserMessage(userInput: string) {
     'use server';
     const aiState = getMutableAIState<typeof AI>();

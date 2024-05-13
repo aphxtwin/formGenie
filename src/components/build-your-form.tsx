@@ -95,7 +95,7 @@ const BuildYourForm: React.FC = () => {
         <div className={`flex flex-col items-center justify-center min-h-screen`}>
            <FlashlightOverlay isVisible={flashlight} />
             <div className="text-center space-y-10">
-                <h1 className="text-7xl">Build Your Form</h1>
+                <h1 className="text-7xl font-semibold tracking-tight  from-blue to-red-500">Build Your Form</h1>
                 <PromptForm 
                     setFlashlight={setFlashlight} 
                     setInput={setInput}
