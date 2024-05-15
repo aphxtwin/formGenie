@@ -3,7 +3,8 @@ import React from "react";
 import { Suspense } from "react";
 import PromptForm from "@/components/prompt-form";
 import { useEffect, useState } from "react";
-import { useActions, useUIState } from "ai/rsc";
+
+import {  getMutableAIState, useAIState, useActions, useUIState } from "ai/rsc";
 import type {AI} from '../../action';
 import UserMessage from "@/components/messageUser";
 import { useParams } from 'next/navigation';
@@ -13,17 +14,11 @@ interface ComponentType {
 const ChatPage = () => {
     const [input, setInput] = useState<string>("")
     const [messages, setMessages] = useUIState<typeof AI>();
-    // const {submitUserMessage} = useActions();
-    const libRelativePath = `@/openv0/webapp/src/components/openv0_generated`;
-
-    const [generateMode, setGenerateMode] = useState('description');
-    const [openv0ComponentsList, setOpenv0ComponentsList] = useState([]);
+    const [messges, setMessges] = useAIState();
+    const {submitUserMessage} = useActions();
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     const [processing, setProcessing] = useState(false);
-    const [componentStream, setComponentStream] = useState<string>('');
-
     // const [componentVersions, setComponentVersions] = useState([]);
-  
     const params = useParams<{ id: string }>();
     const chatId = params.id;
 
@@ -63,7 +58,6 @@ const ChatPage = () => {
       );
       const data = await response.json();
       console.log('ESTA ES LA DATA=>', data);
-      setOpenv0ComponentsList(data.items);
       setLoadedComponents([...Array(data.items.length).keys()].map(e => false));
       const imports = data.items.map(async (component) => {
         // Construct the import path for each child component
@@ -163,7 +157,7 @@ const ChatPage = () => {
         e.preventDefault()
         
         const userDescription = input.trim()
-        if (!userDescription) return
+          if (!userDescription) return
         setInput('')
         // Add user message to UI state
         setMessages((currentMessages) => [
@@ -174,7 +168,12 @@ const ChatPage = () => {
             },
         ]);
         try {
-          generateNewComponent(userDescription)
+          // generateNewComponent(userDescription)
+          const res = await submitUserMessage(userDescription)
+           setMessages((currentMessages) => [
+            ...currentMessages,
+            res,
+          ]);
         } catch (error) {
             console.error(error)
         }

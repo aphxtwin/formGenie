@@ -1,6 +1,6 @@
 import 'server-only'; 
 import { OpenAI } from "openai";
-import { createAI, getMutableAIState, render } from "ai/rsc";
+import { createAI, getAIState, getMutableAIState, render } from "ai/rsc";
 // import { z } from "zod";
 import { nanoid } from '@/lib/utils';
 import AiResponse from '@/components/messageAI';
@@ -8,6 +8,8 @@ const openaiApiKey = process.env.OPENAI_API_KEY
 const openai = new OpenAI({
     apiKey:openaiApiKey,
 });
+
+
 
 
 // An example of a spinner component. You can also import your own components,
@@ -20,7 +22,8 @@ function Spinner() {
 async function submitUserMessage(userInput: string) {
     'use server';
     const aiState = getMutableAIState<typeof AI>();
-    
+    const history = getAIState();
+    console.log('ESTE ES EL HISTORY=>', history)
     // update the AI state with the user's message
     aiState.update([
         ...aiState.get(),
@@ -43,14 +46,13 @@ async function submitUserMessage(userInput: string) {
                 `
                 You are the perfect tool for build forms for a wide range of uses.
                 You can create the perfect form based on the user query.
-                Your response is divided in 2 parts: First is an explanation of your suggestions
-                and why are the perfect fit for the user requirements [is just a natural language response].The second part is a neat and
-                easy to understand react component of your suggested form.  
-                You always make useful follow-up questions in order to help the user.
-                You can also provide helpful suggestions to the user, such as suggesting a different
-                type of question or a different way to phrase a question. You can also provide helpful
-                feedback to the user, such as letting them know if they have made a mistake in their form.
-                If the user queries for something that is not a form, provide reject the query very gently
+                You get the query of the user and then you make concise clear questions
+                that clarifies you: 1. Purpose of the form, 2. Lenght of the form, 
+                3. Type of data to be collected, 4. Type of questions to be asked, 
+                5. Design of the form (colors)
+                -Answer in the same language of the user query
+                -make the questions clear and concise don't overwhelm the user
+                The goal is to create an accurate form that meets the user purpose
                 `,
         },
         ...aiState.get().map((message:any) => ({ role: message.role, content: message.content } )),
