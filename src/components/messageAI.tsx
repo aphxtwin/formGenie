@@ -15,9 +15,9 @@ function AiResponse({ content }: AiResponseProps) {
             </div>
             <div className="flex flex-col">
                 <h1 className={`${chatHeaderStyle}`}>AI</h1>
-                <p className={`${chatTextStyle}`}>
+                <div className={`${chatTextStyle}`}>
                     {content}
-                </p>
+                </div>
             </div>
         </div>
     );

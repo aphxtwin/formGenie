@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from "react";
 import PromptForm from "@/components/prompt-form";
 import UserMessage from "@/components/messageUser";
-import { useActions, useUIState } from 'ai/rsc';
+import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { ClientMessage } from "../../action";
 import { nanoid } from "@/lib/utils";
 interface ComponentType {
@@ -12,12 +12,18 @@ const ChatPage = () => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     // const [componentVersions, setComponentVersions] = useState([]);
-    const [conversation, setConversation] = useState<Message[]>([]);
+    const [messages] = useUIState();
+    const [aiState] = useAIState();
+
     const {submitUserMessage} = useActions();
 
+   
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
+    }
+    if(!messages.length){
+      return null
     }
 
     const fetchComponents = async () => {
@@ -127,19 +133,7 @@ const ChatPage = () => {
           if (!userDescription) return
         setInput('')
         // Add user message to UI state
-        async () => {
-          setConversation((currentConversation: ClientMessage[]) => [
-            ...currentConversation,
-            { id: nanoid(), role: 'user', display: input },
-          ]);
 
-          const message = await submitUserMessage(input);
-        
-          setConversation((currentConversation: ClientMessage[]) => [
-            ...currentConversation,
-            message,
-          ]);
-        }
 
     }
 
@@ -152,12 +146,14 @@ const ChatPage = () => {
                   
                   <div className="col-span-1 h-[90vh]">
                       <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-[80vh]">
-                      <div>
-                      {conversation.map((message: ClientMessage) => (
-                        <div key={message.id}>
-                          {message.role}: {message.display}
-                        </div>
-                      ))}
+                      <div className="py-3 px-2">
+                      {
+                          messages.map((message) => (
+                          <div key={message.id}>
+                            {message.display}
+                          </div>
+                        ))
+                      }
                       </div>
                               <div className="fixed left-9 bottom-6 ">
                                   <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[600px]  max-h-[150px]`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>

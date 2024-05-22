@@ -70,7 +70,7 @@ export default function PromptForm({
               value={input}
               onChange={handleInputChange}
               />
-            {input && (<Button type="submit" className=" text-zinc-200 hover:bg-zinc-800 px-2 py-1 rounded ml-2  shadow-lg  ring-2 ring-zinc-300"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" className="css-i6dzq1"><polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg></Button>)}
+            {input && (<Button type="submit" className=" text-zinc-200 hover:bg-zinc-800 px-2 py-1 rounded ml-2  shadow-lg  ring-2 ring-zinc-300"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg></Button>)}
             
           </div> 
           </form>

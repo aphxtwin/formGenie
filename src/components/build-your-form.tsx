@@ -43,7 +43,6 @@ const BuildYourForm: React.FC = () => {
     const [disabled, setDisabled] = useState(false);
     const {submitUserMessage} = useActions();
     const [buildingSession, setBuildingSession] = useState(false)
-    const [conversation, setConversation] = useState<Message[]>([]);
 
 
     const [flashlight, setFlashlight] = useState(false)
@@ -71,20 +70,19 @@ const BuildYourForm: React.FC = () => {
         if (!value) return
         setInput('')
         // Add user message to UI state
-        try {
-            const {messages}= await submitUserMessage([
-                ...conversation.map(({role,content})=>({role, content})),
-                {role:'user', content:value}
-              ])
-            
-            setConversation(messages)
-           if (messages) {
-                setBuildingSession(true)
+        setMessages(currentMessages => [
+            ...currentMessages,
+            {
+              id: nanoid(),
+              display: <UserMessage content={value}/>
             }
-        } catch (error) {
-            console.error(error)
+          ])
+        // Submit and get response message
+        const responseMessage = await submitUserMessage(value)
+        setMessages(currentMessages => [...currentMessages, responseMessage])
+        if (responseMessage) {
+            setBuildingSession(true);
         }
-        
     }
 
     return (
