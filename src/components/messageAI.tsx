@@ -14,7 +14,7 @@ function AiResponse({ content }: AiResponseProps) {
                 <Image width={100} height={100} alt='ai icon' src={'/aisvg.svg'} />
             </div>
             <div className="flex flex-col">
-                <h1 className={`${chatHeaderStyle}`}>AI</h1>
+                <h1 className={`${chatHeaderStyle}`}>Form Genie</h1>
                 <div className={`${chatTextStyle}`}>
                     {content}
                 </div>
