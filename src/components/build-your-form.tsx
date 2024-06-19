@@ -5,6 +5,7 @@
 import React, { useState, useEffect, use } from 'react';
 import PromptForm from "./prompt-form";
 import FlashlightOverlay from './ui/flashlightOverlay';
+import { useSession } from 'next-auth/react';
 import { useUIState, useActions } from 'ai/rsc';
 import {useChat} from 'ai/react';
 import UserMessage from './messageUser';

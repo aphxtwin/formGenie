@@ -7,11 +7,47 @@ import AiResponse from '@/components/messageAI';
 import { z } from 'zod';
 import { nanoid } from '@/lib/utils';
 import { Message } from '@/lib/types';
+import { getServerSession } from 'next-auth/next';
+import {OPTIONS} from '../api/auth/[...nextauth]/route';
+import { redirect } from "next/navigation";
 
-
-async function submitUserMessage(content: string) {
+async function generateNewComponent(userDescription: string) {
   'use server';
 
+  // Fetch components after generating the new component
+  const aiState = getMutableAIState<typeof AI>();
+  const penultAiState = aiState.get().messages;
+  const newAiState = [...penultAiState.filter(e=> e.role == 'user').map(e=> e.content), userDescription].join(' ');
+  console.log(newAiState);
+   
+  const response = await fetch(
+    `http://localhost:3003/components/new/description`,
+    {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        framework: `react`,
+        components: `shadcn`,
+        icons: `lucide`,
+        description: newAiState,
+        json: false,
+      }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+
+async function submitUserMessage(content: string, expectsChatResponse: boolean = true) {
+  'use server';
+  const session = await getServerSession(OPTIONS);
+  if (!session) {
+    redirect("/api/auth/signin")
+  }
   const aiState = getMutableAIState<typeof AI>();
 
   aiState.update({
@@ -25,6 +61,11 @@ async function submitUserMessage(content: string) {
       }
     ]
   });
+
+
+  if (!expectsChatResponse) {
+    return;
+  }
 
   const result = await streamUI({
     model: openai('gpt-3.5-turbo'),
@@ -89,6 +130,7 @@ export type UIState = {
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
+    generateNewComponent,
   },
   initialUIState: [],
   initialAIState: {chatId:nanoid(), messages:[]},

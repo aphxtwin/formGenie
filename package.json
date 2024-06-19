@@ -52,6 +52,7 @@
     "lucide-react": "^0.367.0",
     "nanoid": "^5.0.7",
     "next": "^14.3.0-canary.7",
+    "next-auth": "^4.24.7",
     "next-themes": "^0.3.0",
     "openai": "^4.33.0",
     "pg": "^8.11.5",
