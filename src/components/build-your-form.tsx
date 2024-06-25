@@ -70,6 +70,7 @@ const BuildYourForm: React.FC = () => {
         const value = input.trim()
         if (!value) return
         setInput('')
+        localStorage.setItem('userInput', value);
         // Add user message to UI state
         setMessages(currentMessages => [
             ...currentMessages,

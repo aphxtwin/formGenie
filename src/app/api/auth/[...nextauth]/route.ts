@@ -56,6 +56,7 @@ export const OPTIONS = {
             }
             return false;
         },
+
     },
     secret: process.env.NEXTAUTH_SECRET,
 
