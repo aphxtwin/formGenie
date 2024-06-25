@@ -13,26 +13,6 @@ datasource db {
   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
-model Component {
-  id          Int      @id @default(autoincrement())
-  name        String
-  version     String
-  description String
-  framework   String
-  // user     User?   @relation(fields: [userId], references: [id])
-  components  String?
-  icons       String?
-  code        String?
-  query       String?
-  logs        String?
-}
-
-model Fail {
-  id        Int     @id @default(autoincrement())
-  query     String
-  timestamp Int
-  logs      String?
-}
 
 model Account {
   id                 String    @id @default(cuid())
@@ -70,7 +50,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  // forms         Component[]
+  components    Component[]
   accounts      Account[]
   sessions      Session[]
 }
@@ -82,3 +62,26 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Component {
+  id          Int      @id @default(autoincrement())
+  name        String
+  version     String
+  description String
+  framework   String
+  components  String?
+  icons       String?
+  code        String?
+  query       String?
+  logs        String?
+  creator     User?   @relation(fields: [creatorId], references: [id])
+  creatorId   String?
+}
+
+model Fail {
+  id        Int     @id @default(autoincrement())
+  query     String
+  timestamp Int
+  logs      String?
+}
+

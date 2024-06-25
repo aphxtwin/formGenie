@@ -56,7 +56,12 @@ export const OPTIONS = {
             }
             return false;
         },
-
+        // async jwt({ token, user }: any) {
+        //     if (user) {
+        //       token.id = user.id;
+        //     }
+        //     return token;
+        //   },
     },
     secret: process.env.NEXTAUTH_SECRET,
 

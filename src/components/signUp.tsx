@@ -12,6 +12,18 @@ export default function SignUp() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const res = await fetch('/api/auth/signUp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
+    if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+    }
+    
   }
 
   useEffect(() => {
@@ -68,7 +80,7 @@ export default function SignUp() {
                 />
             </div>
 
-                <button className="bg-black px-[8.5rem] py-[0.8rem] font-semibold text-white rounded-full hover:bg-gray-800" type="submit">Sign in</button>
+                <button className="bg-black px-[8.5rem] py-[0.8rem] font-semibold text-white rounded-full hover:bg-gray-800" type="submit">Register</button>
           </form>
         </div>
         <div className="flex justify-center items-center pt-6">
