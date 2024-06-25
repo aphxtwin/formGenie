@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import TwitterProvider from "next-auth/providers/twitter";
-import { pages } from "next/dist/build/templates/app-page";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { signIn } from "next-auth/react";
 
 export const OPTIONS = {
     providers : [
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
             // profile(profile) {
             //     return {
             //         id: profile.id,
@@ -17,13 +17,45 @@ export const OPTIONS = {
             //     };
             // },
         }),
-        TwitterProvider({
-            clientId: process.env.TWITTER_CLIENT_ID,
-            clientSecret: process.env.TWITTER_CLIENT_SECRET,
-        }),
+        CredentialsProvider({
+            name: 'Credentials',
+            credentials:{
+                email: {
+                    label: "Email",
+                    type: "email",
+                    placeholder: "Email",
+                },
+                password:{
+                    label: "Password",
+                    type: "password",
+                    placeholder: "Password",
+                },
+            },
+            async authorize(credentials, req) {
+                const user = { id: 1, name: "John Doe", email: ""};
+                console.log(credentials);
+                if (user) {
+                    return user;
+                } else {
+                    return null;
+                }
+                
+            },
+        }),        
     ],
+    session: {
+        strategy: "jwt",
+    },
     pages   : {
         signIn: "/signIn",
+    },
+    callbacks: {
+        async signIn({account, profile}) {
+            if (account.provider === "google" && profile.verified_email === true) {
+                return true;
+            }
+            return false;
+        },
     },
     secret: process.env.NEXTAUTH_SECRET,
 
