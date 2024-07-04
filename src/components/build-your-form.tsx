@@ -10,9 +10,14 @@ import { useUIState, useActions } from 'ai/rsc';
 import {useChat} from 'ai/react';
 import UserMessage from './messageUser';
 import { nanoid } from '@/lib/utils';
-import type {AI} from '../app/(chat)/action';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import type {AI} from '../app/(chat)/actions';
+import { redirect, useRouter } from 'next/navigation';
+import { Session } from '@/lib/types';
+import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+
+interface BuildYourFormProps {
+    session: Session
+}
 
 const examples = {
     "example1": "Create a short online job application form for part-time barista and cashier roles.",
@@ -39,8 +44,9 @@ const ExamplesShowcase = ({ descriptionExample, setInput, input}: { descriptionE
     );
 };
 
-const BuildYourForm: React.FC = () => {
+const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const {input,handleInputChange, setInput} = useChat()
+    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
@@ -48,9 +54,7 @@ const BuildYourForm: React.FC = () => {
     const {submitUserMessage} = useActions();
     const [buildingSession, setBuildingSession] = useState(false)
 
-
     const [flashlight, setFlashlight] = useState(false)
-    // console.log(messages)
 
     //This creates an unique nanoId to identify each chat
     useEffect(() => {
@@ -73,7 +77,11 @@ const BuildYourForm: React.FC = () => {
         if (!value) return
         setInput('')
 
-
+        if(!session) {
+            //store the {chatid, userquery} for
+            setStoredInput({chatSessionId, value})
+            router.push('/signup')
+        }
         // Add user message to UI state
         setMessages(currentMessages => [
             ...currentMessages,

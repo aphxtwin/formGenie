@@ -1,4 +1,4 @@
-import {AI} from './action';
+import {AI} from './actions';
 
 export default function ChatLayout({
     children,

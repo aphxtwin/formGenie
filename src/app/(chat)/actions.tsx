@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { nanoid } from '@/lib/utils';
 import { Message } from '@/lib/types';
 import { getServerSession } from 'next-auth/next';
-import {OPTIONS} from '../api/auth/[...nextauth]/route';
 import { redirect } from "next/navigation";
 
 async function generateNewComponent(userDescription: string) {
@@ -44,10 +43,8 @@ async function generateNewComponent(userDescription: string) {
 
 async function submitUserMessage(content: string, expectsChatResponse: boolean = true) {
   'use server';
-  const session = await getServerSession(OPTIONS);
-  if (!session) {
-    redirect("/api/auth/signin")
-  }
+
+
   //this can't be here!!!!!!!!!!!! this violates REST constraints
   const aiState = getMutableAIState<typeof AI>();
 

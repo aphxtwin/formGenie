@@ -8,7 +8,7 @@ import { nanoid } from "@/lib/utils";
 interface ComponentType {
   component: React.ComponentType;
 }
-const ChatPage = () => {
+const ChatPageClient = () => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     // const [componentVersions, setComponentVersions] = useState([]);
@@ -149,5 +149,5 @@ const ChatPage = () => {
 
 };
 
-export default ChatPage;
+export default ChatPageClient;
 

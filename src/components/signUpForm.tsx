@@ -8,9 +8,14 @@ import { redirect, useRouter } from "next/navigation";
 import { useFormState,useFormStatus } from "react-dom";
 import { getMessageFromCode } from "@/lib/utils";
 import { IconSpinner } from "./ui/icons";
+import { Session } from "@/lib/types";
 // import { useActions } from "ai/rsc";
 
-export default function SignUp() {
+interface SignUpProps{
+  session: Session
+}
+
+const SignUp: React.FC<SignUpProps> = ({session})=> {
   const router = useRouter();
   const [userInput, setUserInput] = useState<string>('')
   const [result,dispatch] = useFormState(signUp,undefined);
@@ -28,14 +33,15 @@ export default function SignUp() {
     }
   }, [result, router])
 
+  const storedInput = localStorage.getItem('prompt');
 
-  // useEffect(() => {
-  //   // Retrieve the stored input value from localStorage
-  //   const storedInput = localStorage.getItem('userInput');
-  //   if (storedInput) {
-  //     setUserInput(storedInput);
-  //   }
-  // }, [])
+  useEffect(() => {
+    // Retrieve the stored input value from localStorage
+    
+    if (storedInput && !session) {
+      setUserInput(storedInput);
+    }
+  }, [storedInput, session])
 
   return (
     <div className="flex flex-col">
@@ -92,6 +98,7 @@ export default function SignUp() {
     </div>
   );
 }
+export default SignUp;
 
 function LoginButton() {
   const {pending} = useFormStatus()
