@@ -8,7 +8,7 @@ import{ PrismaAdapter } from "@auth/prisma-adapter"
 import { getStringFromBuffer } from '@/lib/utils'
 import prisma from '@/lib/prisma'
 
-const {auth, signIn, signOut} = NextAuth({
+export const {auth, signIn, signOut} = NextAuth({
     ...authConfig,
     providers:[
     GoogleProvider({
@@ -57,5 +57,3 @@ const {auth, signIn, signOut} = NextAuth({
     adapter: PrismaAdapter(prisma),
 })
 
-
-export {auth,signIn,signOut}

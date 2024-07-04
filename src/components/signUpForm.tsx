@@ -2,26 +2,40 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import {toast} from 'sonner';
+import { signUp } from "@/app/signup/actions";
 import { redirect, useRouter } from "next/navigation";
-import { useActions } from "ai/rsc";
+import { useFormState,useFormStatus } from "react-dom";
+import { getMessageFromCode } from "@/lib/utils";
+import { IconSpinner } from "./ui/icons";
+// import { useActions } from "ai/rsc";
 
 export default function SignUp() {
-  const [email, setEmail] = useState<String>("");
-  const [password, setPassword] = useState<String>("");
-  const {submitUserMessage} = useActions();
-  const [userInput, setUserInput] = useState('');
   const router = useRouter();
+  const [userInput, setUserInput] = useState<string>('')
+  const [result,dispatch] = useFormState(signUp,undefined);
+
   const inputFieldsStyle = 'border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   
-
-
   useEffect(() => {
-    // Retrieve the stored input value from localStorage
-    const storedInput = localStorage.getItem('userInput');
-    if (storedInput) {
-      setUserInput(storedInput);
+    if (result) {
+      if (result.type === 'error') {
+        toast.error(getMessageFromCode(result.resultCode))
+      } else if (result.type === 'success') {
+        toast.success(getMessageFromCode(result.resultCode))
+        router.refresh()
+      }
     }
-  }, [])
+  }, [result, router])
+
+
+  // useEffect(() => {
+  //   // Retrieve the stored input value from localStorage
+  //   const storedInput = localStorage.getItem('userInput');
+  //   if (storedInput) {
+  //     setUserInput(storedInput);
+  //   }
+  // }, [])
 
   return (
     <div className="flex flex-col">
@@ -47,13 +61,12 @@ export default function SignUp() {
         </div>
         <span className="py-6">or</span>
         <div className="w-full flex justify-center items-center">
-          <form className="" onSubmit={handleSubmit}>
+          <form className="" action={dispatch}>
             <div className="flex flex-col pb-[1.5rem]">
             <input
                   type="email"
-                  value={email}
                   autoComplete="email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
                   placeholder="Email"
                   className={inputFieldsStyle}
                   required
@@ -61,15 +74,13 @@ export default function SignUp() {
                 <input
                   type="password"
                   autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
                   placeholder="Password"
                   className={inputFieldsStyle}
                   required
                 />
             </div>
-
-                <button className="bg-black px-[8.5rem] py-[0.8rem] font-semibold text-white rounded-full hover:bg-gray-800" type="submit">Register</button>
+            <LoginButton/>
           </form>
         </div>
         <div className="flex justify-center items-center pt-6">
@@ -80,4 +91,19 @@ export default function SignUp() {
     </div>
     </div>
   );
+}
+
+function LoginButton() {
+  const {pending} = useFormStatus()
+
+  return (
+    <button 
+      aria-disabled={pending} 
+      className=" bg-black w-[14.3rem] h-[2.8rem] font-semibold text-white rounded-full hover:bg-gray-800" 
+      type="submit"
+      >
+          {pending ? <IconSpinner className="w-full"/> : 'Create Account'}
+      </button>
+
+    )
 }

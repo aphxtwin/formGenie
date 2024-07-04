@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import AuthButton from "@/components/authButton";
+import {Toaster, toast} from 'sonner'; 
 const fontSans = FontSans({
 subsets: ["latin"],
 variable: "--font-sans",
@@ -28,6 +28,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <Toaster position="top-center" />
         {children}
       </body>
     </html>

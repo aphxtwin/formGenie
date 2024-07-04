@@ -44,8 +44,6 @@ const BuildYourForm: React.FC = () => {
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
-    // we use the useSession hook to access the session object
-    const { data: session, status } = useSession();
     const router = useRouter();
     const {submitUserMessage} = useActions();
     const [buildingSession, setBuildingSession] = useState(false)
@@ -74,14 +72,7 @@ const BuildYourForm: React.FC = () => {
         const value = input.trim()
         if (!value) return
         setInput('')
-        console.log(session, 'session')
-        // If no session store the user input and the nanoid in localStorage
-        if (!session){
-            const localStoredUserInput = {id:chatSessionId, userInput: value};
-            localStorage.setItem('userInput', JSON.stringify(localStoredUserInput));
-            router.push('/signIn');
-            return;
-        };
+
 
         // Add user message to UI state
         setMessages(currentMessages => [

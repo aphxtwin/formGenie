@@ -19,6 +19,23 @@ export const authConfig = {
         return Response.redirect(new URL('/login', nextUrl))
       }
       return true
+    },
+    async jwt({ token, user }: any) {
+      if (user) {
+        token = { ...token, id: user.id }
+      }
+
+      return token
+    },
+    async session({ session, token }: any) {
+      if (token) {
+        const { id } = token as { id: string }
+        const { user } = session
+
+        session = { ...session, user: { ...user, id } }
+      }
+
+      return session
     }
   },
   providers: [] // configured in auth.ts
