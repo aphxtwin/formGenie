@@ -1,30 +1,19 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { redirect, useRouter } from "next/navigation";
+import { useActions } from "ai/rsc";
 
 export default function SignUp() {
   const [email, setEmail] = useState<String>("");
   const [password, setPassword] = useState<String>("");
+  const {submitUserMessage} = useActions();
   const [userInput, setUserInput] = useState('');
   const router = useRouter();
   const inputFieldsStyle = 'border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = await fetch('/api/auth/signUp', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    });
-    if (res.ok) {
-        const data = await res.json();
-        console.log(data);
-    }
-    
-  }
+
 
   useEffect(() => {
     // Retrieve the stored input value from localStorage
@@ -48,7 +37,7 @@ export default function SignUp() {
             <button className="px-11 py-[0.68rem] border-[3px] border-black rounded-lg mt-6">
               <div className="flex gap-x-3 items-center">
                 <Image src='/google.svg' width={20} height={20} alt="google" />
-                <span className="font-semibold">Continue with Google</span>
+                <span className="font-semibold">Sign Up with Google</span>
               </div>
 
             </button>

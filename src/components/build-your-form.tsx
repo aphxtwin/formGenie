@@ -2,7 +2,7 @@
     This is the entry point for building a new form.
 */
 'use client';
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import PromptForm from "./prompt-form";
 import FlashlightOverlay from './ui/flashlightOverlay';
 import { useSession } from 'next-auth/react';
@@ -12,6 +12,8 @@ import UserMessage from './messageUser';
 import { nanoid } from '@/lib/utils';
 import type {AI} from '../app/(chat)/action';
 import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+
 const examples = {
     "example1": "Create a short online job application form for part-time barista and cashier roles.",
     "example2": "Build a contact form for a website with name, email, and message fields.",
@@ -42,6 +44,9 @@ const BuildYourForm: React.FC = () => {
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
+    // we use the useSession hook to access the session object
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const {submitUserMessage} = useActions();
     const [buildingSession, setBuildingSession] = useState(false)
 
@@ -60,7 +65,6 @@ const BuildYourForm: React.FC = () => {
         if (buildingSession) {
             setDisabled(true)
             redirect(`/chat/${chatSessionId}`)
-
         }
     },[buildingSession, chatSessionId])
 
@@ -70,7 +74,15 @@ const BuildYourForm: React.FC = () => {
         const value = input.trim()
         if (!value) return
         setInput('')
-        localStorage.setItem('userInput', value);
+        console.log(session, 'session')
+        // If no session store the user input and the nanoid in localStorage
+        if (!session){
+            const localStoredUserInput = {id:chatSessionId, userInput: value};
+            localStorage.setItem('userInput', JSON.stringify(localStoredUserInput));
+            router.push('/signIn');
+            return;
+        };
+
         // Add user message to UI state
         setMessages(currentMessages => [
             ...currentMessages,

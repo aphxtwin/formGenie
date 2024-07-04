@@ -48,6 +48,7 @@ async function submitUserMessage(content: string, expectsChatResponse: boolean =
   if (!session) {
     redirect("/api/auth/signin")
   }
+  //this can't be here!!!!!!!!!!!! this violates REST constraints
   const aiState = getMutableAIState<typeof AI>();
 
   aiState.update({
