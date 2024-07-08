@@ -100,7 +100,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     }
 
     return (
-        <div className={`flex flex-col items-center justify-center min-h-screen`}>
+        <div className={`flex flex-col items-center`}>
            <FlashlightOverlay isVisible={flashlight} />
             <div className="text-center space-y-10">
                 <h1 className="text-7xl font-semibold tracking-tight  from-blue to-red-500">Build Your Form</h1>
@@ -115,8 +115,8 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                     input={input} 
                     flashlight={flashlight}/>
             </div>
-            <div>
-                <div className="absolute bottom-[4rem] inset-x-16">
+            <div className='py-[6rem]'>
+                <div className="retlative bottom-[4rem] inset-x-16">
                     <div className={`flex items-center justify-center space-x-3`}>
                     {Object.keys(examples).map((key) => (
                         <ExamplesShowcase 

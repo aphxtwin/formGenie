@@ -1,4 +1,4 @@
-import {auth} from '../../../auth'
+import {auth} from '@/auth'
 import SignUp from '@/components/signUpForm'
 import { Session } from '@/lib/types'
 import {redirect} from 'next/navigation'
@@ -7,7 +7,7 @@ export default async function SignUpPage() {
     const session = (await auth()) as Session
 
     if (session){
-        redirect('/')
+        redirect('/chat/')
     }
 
     return (
