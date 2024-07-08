@@ -46,7 +46,7 @@ const ExamplesShowcase = ({ descriptionExample, setInput, input}: { descriptionE
 
 const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const {input,handleInputChange, setInput} = useChat()
-    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
+    const [__, setStoredInput] = useLocalStorage('prompt',{})
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
@@ -80,7 +80,8 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
         if(!session) {
             //store the {chatid, userquery} for
             setStoredInput({chatSessionId, value})
-            router.push('/signup')
+            router.push('/login')
+            return
         }
         // Add user message to UI state
         setMessages(currentMessages => [

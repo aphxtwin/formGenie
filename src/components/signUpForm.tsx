@@ -9,6 +9,7 @@ import { useFormState,useFormStatus } from "react-dom";
 import { getMessageFromCode } from "@/lib/utils";
 import { IconSpinner } from "./ui/icons";
 import { Session } from "@/lib/types";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 // import { useActions } from "ai/rsc";
 
 interface SignUpProps{
@@ -19,8 +20,8 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
   const router = useRouter();
   const [userInput, setUserInput] = useState<string>('')
   const [result,dispatch] = useFormState(signUp,undefined);
-
-  const inputFieldsStyle = 'border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
+  const [storedInput,_] = useLocalStorage('prompt',{})
+  const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   
   useEffect(() => {
     if (result) {
@@ -28,20 +29,18 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
         toast.error(getMessageFromCode(result.resultCode))
       } else if (result.type === 'success') {
         toast.success(getMessageFromCode(result.resultCode))
-        router.refresh()
+        // router.refresh()
       }
     }
   }, [result, router])
 
-  const storedInput = localStorage.getItem('prompt');
-
   useEffect(() => {
     // Retrieve the stored input value from localStorage
-    
     if (storedInput && !session) {
-      setUserInput(storedInput);
+      setUserInput(true);
+
     }
-  }, [storedInput, session])
+  }, [session,storedInput])
 
   return (
     <div className="flex flex-col">
@@ -53,16 +52,14 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
             </h1>
         </div>   
         <div className="w-full flex justify-center items-center pt-5">
-          <div className="w-[80%]">
-            <button className="px-11 py-[0.68rem] border-[3px] border-black rounded-lg mt-6">
+        <button className="px-11 py-[0.68rem] border-[3px] border-black rounded-lg mt-6">
               <div className="flex gap-x-3 items-center">
                 <Image src='/google.svg' width={20} height={20} alt="google" />
                 <span className="font-semibold">Sign Up with Google</span>
               </div>
 
-            </button>
+        </button>
 
-          </div>
 
         </div>
         <span className="py-6">or</span>
@@ -91,7 +88,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
         </div>
         <div className="flex justify-center items-center pt-6">
           <span className="pr-1">Already have an account?</span>
-          <button onClick={()=>router.push("/signIn")} className="text-blue-500 font-bold underline">Sign In</button>
+          <button onClick={()=>router.push("/login")} className="text-blue-500 font-bold underline">Sign In</button>
       </div>
 
     </div>
@@ -109,7 +106,7 @@ function LoginButton() {
       className=" bg-black w-[14.3rem] h-[2.8rem] font-semibold text-white rounded-full hover:bg-gray-800" 
       type="submit"
       >
-          {pending ? <IconSpinner className="w-full"/> : 'Create Account'}
+          {pending ? <IconSpinner className="w-full h-8"/> : 'Create Account'}
       </button>
 
     )

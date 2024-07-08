@@ -1,6 +1,6 @@
 'use server';
 
-import { signIn } from 'auth';
+import {signIn} from 'auth';
 import {z} from 'zod';
 import prisma from '@/lib/prisma';
 import { ResultCode, getStringFromBuffer } from '@/lib/utils';
@@ -68,18 +68,23 @@ export async function signUp(
 
         try{
             const result = await createUser(email,hashedPassword,salt)
-            console.log(result)
-            if(result.resultCode === ResultCode.UserCreated){
-                await signIn('credentials',{
-                    email,
-                    password,
-                    redirect: false
-                })
-                return result
+            if (result.resultCode === ResultCode.UserCreated){
+                try{
+                    console.log(signIn, 'sign in')
+                     await signIn('credentials',{
+                        email,
+                        password,
+                        redirect:false
+                    }
+                    )
+                    return result
+                } catch(error){
+                    console.error(error, 'error signing in after sign up')
+                }
             }
+            return result
         } catch (error) {
             if (error instanceof AuthError) {
-                console.log(error)
               switch (error.type) {
                 case 'CredentialsSignin':
                   return {
