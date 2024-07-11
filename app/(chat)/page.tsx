@@ -9,10 +9,10 @@ export default async function ChatPage() {
     const session = (await auth()) as Session
     console.log(session, 'session from page')
 
-    if (!session?.user) {
-        console.log('no session.user in chat page')
-        redirect(`/login`);
-    }
+    // if (!session?.user) {
+    //     console.log('no session.user in chat page')
+    //     redirect(`/login`);
+    // }
     return (
         <div className="grid grid-rows-[1fr_3fr] min-h-screen">
             <div>

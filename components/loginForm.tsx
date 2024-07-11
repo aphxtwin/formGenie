@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 import {toast} from  'sonner'
 import {authenticate} from '@/app/login/actions'
 import { useFormState, useFormStatus } from 'react-dom'
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { IconSpinner } from './ui/icons';
 import { getMessageFromCode } from '@/lib/utils';
 import Image from 'next/image';
@@ -12,6 +12,9 @@ import { useLocalStorage } from '@/lib/hooks/useLocalStorage'
 
 export default function LoginForm() {
   const router= useRouter()
+  const searchPararms = useSearchParams()
+  const chatId = searchPararms?.get('chatSessionId') || undefined;
+
   const [result,dispatch] = useFormState(authenticate,undefined);
   const [userInput, __] = useLocalStorage('prompt',{})
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
@@ -73,7 +76,7 @@ export default function LoginForm() {
           </div>
           <div className="flex justify-center items-center pt-6">
             <span className="pr-1">Don&#39;t have an account?</span>
-            <button onClick={()=>router.push("/signup")} className="text-blue-500 font-bold underline">Create account</button>
+            <button onClick={()=>router.push(chatId?`/signup?chatSessionId=${chatId}?`:'/signup')} className="text-blue-500 font-bold underline">Create account</button>
         </div>
   
       </div>

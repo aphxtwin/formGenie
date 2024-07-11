@@ -79,7 +79,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
         if(!session) {
             //store the {chatid, userquery} for
             setStoredInput({chatSessionId, value})
-            router.push('/login')
+            router.push(`/login?chatSessionId=${chatSessionId}`)
             return
         }
         // Add user message to UI state
