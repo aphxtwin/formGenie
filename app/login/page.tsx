@@ -1,19 +1,22 @@
 import { auth } from '@/auth'
 import LoginForm from '@/components/loginForm'
 import { Session } from '@/lib/types'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 
-export default async function LoginPage() {
+export default async function LoginPage({searchParams}: {searchParams: URLSearchParams}) {
   const session = (await auth()) as Session
-  console.log('session from login page', session) // Debugging statement
+  const chatId = searchParams
 
   if (session) {
-    redirect('/chat/a')
+    if (searchParams.has('chatSessionId')) {
+      redirect(`/chat/${chatId}`)
+    }
+    redirect('/')  
   }
 
   return (
     <main className="flex flex-col p-4 justify-center items-center h-screen">
-      <LoginForm />
+      <LoginForm session={session} />
     </main>
   )
 }

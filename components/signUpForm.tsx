@@ -20,7 +20,8 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
   const router = useRouter();
   const [userInput, setUserInput] = useState<string>('')
   const [result,dispatch] = useFormState(signUp,undefined);
-  const [storedInput,_] = useLocalStorage('prompt',{})
+  const [storedInput,_] = useLocalStorage('prompt',null)
+  
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   
   useEffect(() => {
@@ -36,8 +37,10 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
 
   useEffect(() => {
     // Retrieve the stored input value from localStorage
-    if (storedInput && !session) {
-      setUserInput(true);
+    if (storedInput && Object.keys(storedInput).length> 0 && !session) {
+      setUserInput(storedInput);
+      console.log(storedInput)
+      router.push(`/signup?chatSessionId=${storedInput.chatSessionId}`)
     }
   }, [session,storedInput])
 

@@ -4,10 +4,13 @@ import PromptForm from "@/components/prompt-form";
 import UserMessage from "@/components/messageUser";
 import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { nanoid } from "@/lib/utils";
+import { usePathname,useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface ComponentType {
   component: React.ComponentType;
 }
+
 const ChatPageClient = ({session}) => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
@@ -17,9 +20,10 @@ const ChatPageClient = ({session}) => {
     const [_, setMessages] = useUIState<typeof AI>();
     const [processing, setProcessing] = useState<boolean>(false);
     const {submitUserMessage, generateNewComponent} = useActions();
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const containsChatSessionId = searchParams.get('chatSessionId')
 
-
-    console.log('session from chat component', session)
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
@@ -65,6 +69,15 @@ const ChatPageClient = ({session}) => {
     useEffect(() => {
       fetchComponents()
     }, []);
+    useEffect(() => {
+      if(session?.user){
+        if(containsChatSessionId){
+          window.history.replaceState({},'',`/chat/${searchParams.get('chatSessionId')}`)
+          router.refresh()
+        }
+      }
+    }
+    ,[session, searchParams])
 
     const handleSubmission =  async (e:any) =>{
       e.preventDefault()
@@ -124,7 +137,6 @@ const ChatPageClient = ({session}) => {
                       <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
                       <div className='my-2'>
                         <div className=' flex items-center justify-center overflow-y-hidden w-[510px] h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
- 
                           
                           {loadedComponents.map((component, index) => (
                             <div className="w-full" key={index}>

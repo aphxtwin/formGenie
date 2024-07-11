@@ -1,5 +1,5 @@
 'use client'
-import {useEffect} from 'react'
+import {useEffect,useState} from 'react'
 import {toast} from  'sonner'
 import {authenticate} from '@/app/login/actions'
 import { useFormState, useFormStatus } from 'react-dom'
@@ -8,15 +8,17 @@ import { IconSpinner } from './ui/icons';
 import { getMessageFromCode } from '@/lib/utils';
 import Image from 'next/image';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage'
+import { Session } from '@/lib/types'
 
 
-export default function LoginForm() {
+export default function LoginForm({ session }: { session: Session }) {
   const router= useRouter()
   const searchPararms = useSearchParams()
   const chatId = searchPararms?.get('chatSessionId') || undefined;
+  const [userInput, setUserInput] = useState<string>('')
 
   const [result,dispatch] = useFormState(authenticate,undefined);
-  const [userInput, __] = useLocalStorage('prompt',{})
+  const [storedInput, __] = useLocalStorage('prompt',null)
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
 
   useEffect(() => {
@@ -30,6 +32,14 @@ export default function LoginForm() {
       }
     }
   }, [result, router])
+
+  useEffect(() => {
+    // Retrieve the stored input value from localStorage
+    if (storedInput && Object.keys(storedInput).length> 0 && !session) {
+      setUserInput(storedInput);
+      router.push(`/login?chatSessionId=${storedInput.chatSessionId}`)
+    }
+  }, [])
 
   return (
       <div className="flex flex-col">
@@ -76,7 +86,7 @@ export default function LoginForm() {
           </div>
           <div className="flex justify-center items-center pt-6">
             <span className="pr-1">Don&#39;t have an account?</span>
-            <button onClick={()=>router.push(chatId?`/signup?chatSessionId=${chatId}?`:'/signup')} className="text-blue-500 font-bold underline">Create account</button>
+            <button onClick={()=>router.push(`/signup`)} className="text-blue-500 font-bold underline">Create account</button>
         </div>
   
       </div>

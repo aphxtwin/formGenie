@@ -12,10 +12,16 @@ const authConfig = {
       const isLoggedIn = !!auth?.user
       const isOnLoginPage = nextUrl.pathname.startsWith('/login')
       const isOnSignupPage = nextUrl.pathname.startsWith('/signup')
-
+      const containschatSessionId = nextUrl.searchParams.has('chatSessionId')
+      
       if (isLoggedIn) {
         if (isOnLoginPage || isOnSignupPage) {
-          return Response.redirect(new URL('/chat/a', nextUrl))
+          if(containschatSessionId) {
+            const chatSessionId = nextUrl.searchParams.get('chatSessionId')
+            return Response.redirect(new URL(`/chat/${chatSessionId}`, nextUrl))
+          }
+          return Response.redirect(new URL('/', nextUrl))
+          
         }
       }
 
