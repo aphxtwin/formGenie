@@ -7,7 +7,6 @@ import AiResponse from '@/components/messageAI';
 import { z } from 'zod';
 import { nanoid } from '@/lib/utils';
 import { Message } from '@/lib/types';
-import { getServerSession } from 'next-auth/next';
 import { redirect } from "next/navigation";
 
 async function generateNewComponent(userDescription: string) {
@@ -45,7 +44,7 @@ async function submitUserMessage(content: string, expectsChatResponse: boolean =
   'use server';
 
 
-  //this can't be here!!!!!!!!!!!! this violates REST constraints
+  //!!!!!!!!!!!! this violates REST constraints
   const aiState = getMutableAIState<typeof AI>();
 
   aiState.update({

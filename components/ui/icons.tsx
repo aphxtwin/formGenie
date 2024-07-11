@@ -20,6 +20,14 @@ function IconAI({ className, ...props }: React.ComponentProps<'svg'>) {
     );
 }
 
+function Puertita(){
+  return(
+    <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 12.5833L12 7.99999L7 3.41666V6.16666H0V9.83332H7V12.5833ZM16 0.666656H6V2.49999H16V13.5H6V15.3333H16C16.5304 15.3333 17.0391 15.1402 17.4142 14.7964C17.7893 14.4525 18 13.9862 18 13.5V2.49999C18 2.01376 17.7893 1.54744 17.4142 1.20363C17.0391 0.859811 16.5304 0.666656 16 0.666656Z" fill="white"/>
+    </svg>
+  )
+}
+
 function IconUser({ className, ...props }: React.ComponentProps<'svg'>) {
     return (
       <svg
@@ -47,4 +55,4 @@ function IconSpinner({ className, ...props }: React.ComponentProps<'svg'>) {
     </svg>
   )
 }
-export {IconAI, IconUser, IconSpinner}
+export {IconAI, IconUser, IconSpinner, Puertita}

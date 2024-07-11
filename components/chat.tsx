@@ -8,7 +8,7 @@ import { nanoid } from "@/lib/utils";
 interface ComponentType {
   component: React.ComponentType;
 }
-const ChatPageClient = () => {
+const ChatPageClient = ({session}) => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     // const [componentVersions, setComponentVersions] = useState([]);
@@ -18,7 +18,8 @@ const ChatPageClient = () => {
     const [processing, setProcessing] = useState<boolean>(false);
     const {submitUserMessage, generateNewComponent} = useActions();
 
-   
+
+    console.log('session from chat component', session)
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)

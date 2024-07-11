@@ -4,10 +4,12 @@ import { Session } from '@/lib/types'
 import {redirect} from 'next/navigation'
 
 export default async function SignUpPage() {
-    const session = (await auth()) as Session
 
+    const session = (await auth()) as Session
+    console.log(session)
     if (session){
-        redirect('/chat/')
+        console.log('session from sign up', session)
+        redirect('/chat/a')
     }
 
     return (

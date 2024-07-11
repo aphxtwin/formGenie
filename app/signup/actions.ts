@@ -73,8 +73,7 @@ export async function signUp(
                         email,
                         password,
                         redirect:false
-                    }
-                    )
+                    })
                     return result
 
             }

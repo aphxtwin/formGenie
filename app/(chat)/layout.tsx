@@ -1,5 +1,4 @@
 import {AI} from './actions';
-
 export default function ChatLayout({
     children,
   }: Readonly<{

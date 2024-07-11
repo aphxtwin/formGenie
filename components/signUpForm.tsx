@@ -29,16 +29,15 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
         toast.error(getMessageFromCode(result.resultCode))
       } else if (result.type === 'success') {
         toast.success(getMessageFromCode(result.resultCode))
-        // router.refresh()
+        router.refresh()
       }
     }
-  }, [result, router])
+  }, [result,router])
 
   useEffect(() => {
     // Retrieve the stored input value from localStorage
     if (storedInput && !session) {
       setUserInput(true);
-
     }
   }, [session,storedInput])
 

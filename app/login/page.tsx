@@ -1,12 +1,12 @@
-"use server"
-import {auth} from '@/auth'
+import { auth } from '@/auth'
 import LoginForm from '@/components/loginForm'
 import { Session } from '@/lib/types'
 import { redirect } from 'next/navigation'
 
 export default async function LoginPage() {
   const session = (await auth()) as Session
-  
+  console.log('session from login page', session) // Debugging statement
+
   if (session) {
     redirect('/chat/a')
   }

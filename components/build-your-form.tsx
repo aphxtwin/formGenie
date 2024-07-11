@@ -5,7 +5,6 @@
 import React, { useState, useEffect } from 'react';
 import PromptForm from "./prompt-form";
 import FlashlightOverlay from './ui/flashlightOverlay';
-import { useSession } from 'next-auth/react';
 import { useUIState, useActions } from 'ai/rsc';
 import {useChat} from 'ai/react';
 import UserMessage from './messageUser';
@@ -66,9 +65,9 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     useEffect(() => {
         if (buildingSession) {
             setDisabled(true)
-            redirect(`/chat/${chatSessionId}`)
+            router.push(`/chat/${chatSessionId}`)
         }
-    },[buildingSession, chatSessionId])
+    },[buildingSession, chatSessionId, router])
 
     const handleSubmission =  async (e:any) =>{
         e.preventDefault()
@@ -102,7 +101,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     return (
         <div className={`flex flex-col items-center`}>
            <FlashlightOverlay isVisible={flashlight} />
-            <div className="text-center space-y-10">
+            <div className="text-center space-y-9">
                 <h1 className="text-7xl font-semibold tracking-tight  from-blue to-red-500">Build Your Form</h1>
                 <PromptForm 
                     setFlashlight={setFlashlight} 
@@ -111,12 +110,12 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                     isTheFirstMessage={true}
                     handleInputChange={handleInputChange} 
                     handleSubmit={handleSubmission} 
-                    className='w-[515px] max-h-[200px]'
+                    className='w-[515px] max-h-[202px]'
                     input={input} 
                     flashlight={flashlight}/>
             </div>
-            <div className='py-[6rem]'>
-                <div className="retlative bottom-[4rem] inset-x-16">
+            <div className='py-[2rem]'>
+                <div className="absolute bottom-[6rem] inset-x-16">
                     <div className={`flex items-center justify-center space-x-3`}>
                     {Object.keys(examples).map((key) => (
                         <ExamplesShowcase 

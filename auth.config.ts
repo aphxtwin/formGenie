@@ -1,7 +1,7 @@
-import { signIn } from 'auth'
 import type { NextAuthConfig } from 'next-auth'
 
-export const authConfig = {
+
+const authConfig = {
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: '/login',
@@ -15,7 +15,7 @@ export const authConfig = {
 
       if (isLoggedIn) {
         if (isOnLoginPage || isOnSignupPage) {
-          return Response.redirect(new URL('/', nextUrl))
+          return Response.redirect(new URL('/chat/a', nextUrl))
         }
       }
 
@@ -32,12 +32,14 @@ export const authConfig = {
       if (token) {
         const { id } = token as { id: string }
         const { user } = session
-
         session = { ...session, user: { ...user, id } }
-      }
 
+      }
       return session
     },
   },
-  providers: []
+  providers: [],
+  
 } satisfies NextAuthConfig
+
+export default authConfig

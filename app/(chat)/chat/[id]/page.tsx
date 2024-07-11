@@ -1,13 +1,15 @@
-import { auth } from 'auth';
+import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import ChatPageClient from '@/components/chat';
 import { Session } from '@/lib/types';
+
 const ChatPage = async () => {
-  
-  const session = (await auth()) as Session;
+
+  const session = (await auth()) as Session
 
   if (!session?.user) {
-    redirect(`/signup`);
+    console.log('no session')
+    redirect(`/login`);
   }
 
   return <ChatPageClient session={session} />;

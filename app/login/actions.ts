@@ -1,3 +1,4 @@
+'use server'
 import prisma from '@/lib/prisma';
 import { ResultCode } from '@/lib/utils';
 import { z } from 'zod';
@@ -24,6 +25,7 @@ export async function authenticate(
     __prevState: ResultCode|undefined,
     formData: FormData,
 ): Promise<Result | undefined> {
+    
     console.log('Authentication attempt started');
     try {
         const email = formData.get('email') as string;
@@ -36,19 +38,24 @@ export async function authenticate(
                 password: z.string().min(6)
             })
             .safeParse({ email, password });
+
+
         if (parsedCredentials.success) {
-           await signIn('credentials', {
-                email,
-                password,
-                redirect: false
-            });
-            console.log('Authentication successful');
-            return {
-                type: 'success',
-                resultCode: ResultCode.UserLoggedIn
-            };
+            try{
+                await signIn('credentials', {
+                    email,
+                    password,
+                    redirect: false
+                });
+                console.log('Authentication successful');
+                return {
+                    type: 'success',
+                    resultCode: ResultCode.UserLoggedIn
+                };
+            } catch(e){console.log(e, 'cacaca')}
+
         } else {
-            console.error('Credential validation failed:', parsedCredentials.error);
+            console.error('Credential validation failed PUTOO:', parsedCredentials.error);
             return {
                 type: 'error',
                 resultCode: ResultCode.InvalidCredentials

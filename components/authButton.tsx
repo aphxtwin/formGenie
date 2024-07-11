@@ -1,23 +1,29 @@
+"use client";
+
 import Link from 'next/link'
-import {auth} from '@/auth'
 import { Session } from "@/lib/types"
 import React from "react"
-const authStyle = "bg-black hover:bg-slate-700 text-white px-10 rounded-lg text-lg font-semibold"
+import { Puertita } from "@/components/ui/icons";
+
+
+const authStyle = "bg-neutral-900 hover:bg-neutral-500 py-[7px] transition duration-300 ease-in-out text-white px-5 rounded-lg font-semibold";
 interface AuthButtonProps {
     session: Session
 }
 
-export const AuthButton: React.FC<AuthButtonProps> = async ({session})=> {
+export const AuthButton: React.FC<AuthButtonProps> = ({session})=> {
+    
     if (session) {
         return (
-            <Link className={authStyle} variant="secondary" size="lg">
+            <button onClick={()=>console.log('logged out!')} className={authStyle}>
                 Log Out
-            </Link>
+            </button>
         )
     }
+    
     return (
-    <Link href={'/'} className={authStyle} variant="secondary" size="lg">
-        Log In
+    <Link href={'/login'} className={authStyle}>
+        <span className='flex flex-inline items-center gap-x-2'><Puertita/>Log In</span>
     </Link>
   )
 }
