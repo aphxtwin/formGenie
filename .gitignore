@@ -13,6 +13,11 @@
 /.next/
 /out/
 
+# prisma
+/node_modules/.prisma/client
+prisma/*.db
+
+
 # production
 /build
 

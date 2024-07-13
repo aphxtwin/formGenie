@@ -45,7 +45,7 @@ const ExamplesShowcase = ({ descriptionExample, setInput, input}: { descriptionE
 
 const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const {input,handleInputChange, setInput} = useChat()
-    const [__, setStoredInput] = useLocalStorage('prompt',{})
+    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
     const [_, setMessages] = useUIState<typeof AI>();
     const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
@@ -54,12 +54,12 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const [buildingSession, setBuildingSession] = useState(false)
 
     const [flashlight, setFlashlight] = useState(false)
-
+    console.log(storedInput,'de')
     //This creates an unique nanoId to identify each chat
     useEffect(() => {
         const newChatSessionId = nanoid();
         setChatSessionId(newChatSessionId);
-
+        setStoredInput({})
     },[])
 
     useEffect(() => {
@@ -91,11 +91,17 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
             }
           ])
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value)
-        setMessages(currentMessages => [...currentMessages, responseMessage])
-        if (responseMessage) {
-            setBuildingSession(true);
+        try{
+            const responseMessage = await submitUserMessage(value)
+            setMessages(currentMessages => [...currentMessages, responseMessage])
+            if (responseMessage) {
+                setBuildingSession(true);
+            }
+        } catch(e){
+            console.error(e)
         }
+
+
     }
 
     return (
@@ -114,8 +120,8 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                     input={input} 
                     flashlight={flashlight}/>
             </div>
-            <div className='py-[2rem]'>
-                <div className="absolute bottom-[6rem] inset-x-16">
+            <div className=''>
+                <div className="absolute bottom-20  inset-x-16">
                     <div className={`flex items-center justify-center space-x-3`}>
                     {Object.keys(examples).map((key) => (
                         <ExamplesShowcase 

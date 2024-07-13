@@ -8,6 +8,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+
+}
+
 datasource db {
   provider = "postgresql"
   url = env("DATABASE_URL") 
@@ -51,9 +56,10 @@ model User {
   salt          String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  components    Component[]
   accounts      Account[]
   sessions      Session[]
+  buildingSessions BuildSession[]
+  components    Component[]
 }
 
 model VerificationToken {
@@ -75,7 +81,9 @@ model Component {
   code        String?
   query       String?
   logs        String?
-  creator     User?   @relation(fields: [creatorId], references: [id])
+  buildingSessionId String @unique
+  buildingSession BuildSession @relation(fields: [buildingSessionId], references: [id])
+  user     User?   @relation(fields: [creatorId], references: [id])
   creatorId   String?
 }
 
@@ -86,3 +94,31 @@ model Fail {
   logs      String?
 }
 
+model BuildSession{
+  id  String   @id @default(cuid())
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages Message[]
+  component Component?
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id       Int     @id @default(autoincrement())
+  content  String
+  role     Role
+  timestamp  DateTime @default(now())
+  buildingSessionId String
+  buildingSession BuildSession @relation(fields: [buildingSessionId], references: [id])
+}
+
+enum Role {
+  USER
+  AI
+}
+
+// enum Status {
+//   DRAFT
+//   COMPLETED
+// }

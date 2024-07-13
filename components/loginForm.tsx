@@ -15,12 +15,10 @@ export default function LoginForm({ session }: { session: Session }) {
   const router= useRouter()
   const searchPararms = useSearchParams()
   const chatId = searchPararms?.get('chatSessionId') || undefined;
-  const [userInput, setUserInput] = useState<string>('')
-
   const [result,dispatch] = useFormState(authenticate,undefined);
-  const [storedInput, __] = useLocalStorage('prompt',null)
+  const [storedInput, __] = useLocalStorage('prompt',{})
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
-
+  const isStored = Object.keys(storedInput).length > 0
   useEffect(() => {
     if (result) {
       
@@ -35,9 +33,8 @@ export default function LoginForm({ session }: { session: Session }) {
 
   useEffect(() => {
     // Retrieve the stored input value from localStorage
-    if (storedInput && Object.keys(storedInput).length> 0 && !session) {
-      setUserInput(storedInput);
-      router.push(`/login?chatSessionId=${storedInput.chatSessionId}`)
+    if (isStored  && !session) {
+      router.push(`/login?chatSessionId=${chatId}`)
     }
   }, [])
 
@@ -46,7 +43,7 @@ export default function LoginForm({ session }: { session: Session }) {
         <div className="flex flex-col text-center">
           <div className="flex flex-col items-center">
             <h1 className="text-4xl font-semibold">
-              {userInput ? <span>Your prompt is safe. Sign in to make it real</span> : <span>Log in to design and deploy forms.</span>}
+              {isStored ? <span>Your prompt is safe. Sign in to make it real</span> : <span>Log in to design and deploy forms.</span>}
             </h1>
           </div>   
           <div className="w-full flex justify-center items-center pt-5">

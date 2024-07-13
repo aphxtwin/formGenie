@@ -47,15 +47,19 @@ export async function authenticate(
                     password,
                     redirect: false
                 });
-                console.log('Authentication successful');
                 return {
                     type: 'success',
                     resultCode: ResultCode.UserLoggedIn
                 };
-            } catch(e){console.log(e, 'cacaca')}
+            } catch(e){
+                console.log(e, 'cacaca')
+                return {
+                    type: 'error',
+                    resultCode: ResultCode.InvalidCredentials,
+                }
+            }
 
         } else {
-            console.error('Credential validation failed PUTOO:', parsedCredentials.error);
             return {
                 type: 'error',
                 resultCode: ResultCode.InvalidCredentials

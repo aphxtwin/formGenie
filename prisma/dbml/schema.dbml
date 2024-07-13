@@ -1,0 +1,118 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Account {
+  id String [pk]
+  userId String [not null]
+  providerType String [not null]
+  providerId String [not null]
+  providerAccountId String [not null]
+  refreshToken String
+  accessToken String
+  accessTokenExpires DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user User [not null]
+
+  indexes {
+    (providerId, providerAccountId) [unique]
+  }
+}
+
+Table Session {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user User [not null]
+  accessToken String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table User {
+  id String [pk]
+  name String
+  email String [unique]
+  emailVerified DateTime
+  password String
+  image String
+  salt String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accounts Account [not null]
+  sessions Session [not null]
+  buildingSessions BuildSession [not null]
+  components Component [not null]
+}
+
+Table VerificationToken {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table Component {
+  id Int [pk, increment]
+  name String [not null]
+  version String [not null]
+  description String [not null]
+  framework String [not null]
+  components String
+  icons String
+  code String
+  query String
+  logs String
+  buildingSessionId String [unique, not null]
+  buildingSession BuildSession [not null]
+  user User
+  creatorId String
+}
+
+Table Fail {
+  id Int [pk, increment]
+  query String [not null]
+  timestamp Int [not null]
+  logs String
+}
+
+Table BuildSession {
+  id String [pk]
+  userId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  messages Message [not null]
+  component Component
+  user User [not null]
+}
+
+Table Message {
+  id Int [pk, increment]
+  content String [not null]
+  role Role [not null]
+  timestamp DateTime [default: `now()`, not null]
+  buildingSessionId String [not null]
+  buildingSession BuildSession [not null]
+}
+
+Enum Role {
+  USER
+  AI
+}
+
+Ref: Account.userId > User.id
+
+Ref: Session.userId > User.id [delete: Cascade]
+
+Ref: Component.buildingSessionId - BuildSession.id
+
+Ref: Component.creatorId > User.id
+
+Ref: BuildSession.userId > User.id
+
+Ref: Message.buildingSessionId > BuildSession.id

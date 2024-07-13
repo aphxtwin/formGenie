@@ -20,5 +20,13 @@ export const useLocalStorage = <T>(
     // Save to localStorage
     window.localStorage.setItem(key, JSON.stringify(value))
   }
-  return [storedValue, setValue]
+
+
+
+  return [storedValue, setValue, resetLocalStorage]
 }
+
+export const resetLocalStorage = () => {
+  window.localStorage.clear()
+}
+

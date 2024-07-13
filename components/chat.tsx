@@ -1,11 +1,12 @@
 'use client'
 import React, {useState, useEffect} from "react";
 import PromptForm from "@/components/prompt-form";
-import UserMessage from "@/components/messageUser";
+import UserResponse from "@/components/messageUser";
 import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { nanoid } from "@/lib/utils";
 import { usePathname,useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import AiResponse from "./messageAI";
 
 interface ComponentType {
   component: React.ComponentType;
@@ -69,6 +70,7 @@ const ChatPageClient = ({session}) => {
     useEffect(() => {
       fetchComponents()
     }, []);
+
     useEffect(() => {
       if(session?.user){
         if(containsChatSessionId){
@@ -90,7 +92,7 @@ const ChatPageClient = ({session}) => {
         ...currentMessages,
         {
           id: nanoid(),
-          display: <UserMessage content={userDescription}/>
+          display: <UserResponse content={userDescription}/>
         }
       ])
       setProcessing(true);
@@ -117,14 +119,15 @@ const ChatPageClient = ({session}) => {
                   
                   <div className="col-span-1 h-[90vh]">
                       <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-[80vh]">
-                      <div className="py-3 px-2">
+                      <div className="py-3 px-2 space-y-5">
                       {
-                          messages.map((message) => (
+                          messages.map((message:any) => (
                           <div key={message.id}>
                             {message.display}
                           </div>
                         ))
                       }
+                      
                       </div>
                               <div className="fixed left-9 bottom-6 ">
                                   <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[600px]  max-h-[150px]`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>

@@ -1,5 +1,3 @@
-
-
 import Link from 'next/link'
 import { Session } from "@/lib/types"
 import { Puertita } from "@/components/ui/icons";
@@ -11,7 +9,6 @@ interface AuthButtonProps {
 }
 
 export const AuthButton: React.FC<AuthButtonProps> = ({session})=> {
-    
     if (session) {
         return (
             <form action={async ()=>{

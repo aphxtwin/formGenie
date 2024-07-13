@@ -2,7 +2,6 @@ import 'server-only'
 import React from 'react';
 import { createAI, getMutableAIState, streamUI, createStreamableUI, createStreamableValue } from 'ai/rsc';
 import { openai } from '@ai-sdk/openai';
-import { ReactNode } from 'react';
 import AiResponse from '@/components/messageAI';
 import { z } from 'zod';
 import { nanoid } from '@/lib/utils';

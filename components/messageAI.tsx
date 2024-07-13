@@ -1,7 +1,6 @@
 // AiResponse.tsx
 import Image from 'next/image';
 import React from 'react';
-import { chatRowBaseStyle, chatImageStyle, chatHeaderStyle, chatTextStyle } from '@/lib/commonStyles';
 
 interface AiResponseProps {
     content: React.ReactNode;
@@ -9,15 +8,13 @@ interface AiResponseProps {
 
 function AiResponse({ content }: AiResponseProps) {
     return (
-        <div className={`${chatRowBaseStyle}`}>
-            <div className={`${chatImageStyle}`}>
-                <Image width={100} height={100} alt='ai icon' src={'/aisvg.svg'} />
+        <div className='space-y-1'>
+            <div className='flex items-center space-x-2'>
+                <Image width={50} height={50} className='rounded' alt='ai icon' src={'/aisvg.svg'} />
+                <h1 className='font-bold text-xl'>FormGenie</h1>
             </div>
-            <div className="flex flex-col">
-                <h1 className={`${chatHeaderStyle}`}>Form Genie</h1>
-                <div className={`${chatTextStyle}`}>
-                    {content}
-                </div>
+            <div className='max-w-prose'>
+                {content}
             </div>
         </div>
     );
