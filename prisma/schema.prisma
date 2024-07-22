@@ -81,8 +81,8 @@ model Component {
   code        String?
   query       String?
   logs        String?
-  buildingSessionId String @unique
-  buildingSession BuildSession @relation(fields: [buildingSessionId], references: [id])
+  buildSessionId String @unique
+  buildSession BuildSession @relation(fields: [buildSessionId], references: [id])
   user     User?   @relation(fields: [creatorId], references: [id])
   creatorId   String?
 }
@@ -95,10 +95,11 @@ model Fail {
 }
 
 model BuildSession{
-  id  String   @id @default(cuid())
+  id  String   @id @default(cuid()) @unique
   userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
   messages Message[]
   component Component?
   user User @relation(fields: [userId], references: [id])
@@ -115,7 +116,7 @@ model Message {
 
 enum Role {
   USER
-  AI
+  ASSISTANT
 }
 
 // enum Status {

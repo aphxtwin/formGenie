@@ -5,13 +5,12 @@ import { redirect, useSearchParams } from 'next/navigation'
 
 export default async function LoginPage({searchParams}: {searchParams: URLSearchParams}) {
   const session = (await auth()) as Session
-  const chatId = searchParams
 
   if (session) {
-    if (searchParams.has('chatSessionId')) {
-      redirect(`/chat/${chatId}`)
+    if(Object.keys(searchParams).length > 0 && searchParams.has('chatId')){
+      redirect(`/chat/${searchParams}`)
     }
-    redirect('/')  
+    redirect('/') 
   }
 
   return (

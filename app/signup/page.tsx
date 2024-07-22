@@ -8,7 +8,6 @@ export default async function SignUpPage() {
     const session = (await auth()) as Session
     console.log(session)
     if (session){
-        console.log('session from sign up', session)
         redirect('/chat/a')
     }
 

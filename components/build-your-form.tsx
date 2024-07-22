@@ -10,9 +10,10 @@ import {useChat} from 'ai/react';
 import UserMessage from './messageUser';
 import { nanoid } from '@/lib/utils';
 import type {AI} from '../app/(chat)/actions';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Session } from '@/lib/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+
 
 interface BuildYourFormProps {
     session: Session
@@ -45,29 +46,14 @@ const ExamplesShowcase = ({ descriptionExample, setInput, input}: { descriptionE
 
 const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const {input,handleInputChange, setInput} = useChat()
-    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
     const [_, setMessages] = useUIState<typeof AI>();
-    const [ chatSessionId, setChatSessionId ] = useState<string | null>(null);
     const [disabled, setDisabled] = useState(false);
     const router = useRouter();
     const {submitUserMessage} = useActions();
-    const [buildingSession, setBuildingSession] = useState(false)
+    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
 
     const [flashlight, setFlashlight] = useState(false)
-    console.log(storedInput,'de')
-    //This creates an unique nanoId to identify each chat
-    useEffect(() => {
-        const newChatSessionId = nanoid();
-        setChatSessionId(newChatSessionId);
-        setStoredInput({})
-    },[])
 
-    useEffect(() => {
-        if (buildingSession) {
-            setDisabled(true)
-            router.push(`/chat/${chatSessionId}`)
-        }
-    },[buildingSession, chatSessionId, router])
 
     const handleSubmission =  async (e:any) =>{
         e.preventDefault()
@@ -75,13 +61,8 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
         const value = input.trim()
         if (!value) return
         setInput('')
+        
 
-        if(!session) {
-            //store the {chatid, userquery} for
-            setStoredInput({chatSessionId, value})
-            router.push(`/login?chatSessionId=${chatSessionId}`)
-            return
-        }
         // Add user message to UI state
         setMessages(currentMessages => [
             ...currentMessages,
@@ -91,24 +72,53 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
             }
           ])
         // Submit and get response message
-        try{
-            const responseMessage = await submitUserMessage(value)
-            setMessages(currentMessages => [...currentMessages, responseMessage])
-            if (responseMessage) {
-                setBuildingSession(true);
+        if(value){
+            try{
+                const responseMessage = await submitUserMessage({ 
+                        content:value,
+                        currentBuildSession:null,
+                        generationRequest:false 
+                    })
+            
+                if (responseMessage) {
+                    const buildSessionId = responseMessage.buildSessionId
+                    if(responseMessage.type === 'session') {
+                        // No session but saves the prompt and generates a buildSessionId
+                        setStoredInput({prompt:value,buildSessionId:buildSessionId})
+                        router.push(`/login?chatSessionId=${buildSessionId}`)
+                    } else {
+                        setMessages(currentMessages => [...currentMessages, responseMessage])
+                        buildSessionId && setStoredInput({prompt:value,buildSessionId})
+                        router.push(`/chat/${buildSessionId}`)
+                    }
+
+                } else {
+                    console.log('no response message because error')
+                }
+            } catch(e){
+                console.error(e)
             }
-        } catch(e){
-            console.error(e)
+        } else {
+            console.error('no value or buildSessionId')
         }
 
 
+
     }
+
+    
+    // useEffect(() => {
+    //     if (storedInput) {
+    //         setDisabled(true)
+    //         router.push(`/chat/${storedInput}`)
+    //     }
+    // },[storedInput, router])
 
     return (
         <div className={`flex flex-col items-center`}>
            <FlashlightOverlay isVisible={flashlight} />
             <div className="text-center space-y-9">
-                <h1 className="text-7xl font-semibold tracking-tight  from-blue to-red-500">Build Your Form</h1>
+                <h1 className="text-7xl font-semibold tracking-tight from-blue to-red-500">Build Your Form</h1>
                 <PromptForm 
                     setFlashlight={setFlashlight} 
                     setInput={setInput}

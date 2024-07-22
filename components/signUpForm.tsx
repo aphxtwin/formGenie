@@ -40,7 +40,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
     if (storedInput && Object.keys(storedInput).length> 0 && !session) {
       setUserInput(storedInput);
       console.log(storedInput)
-      router.push(`/signup?chatSessionId=${storedInput.chatSessionId}`)
+      router.push(`/signup?chatSessionId=${storedInput.buildSessionId}`)
     }
   }, [session,storedInput])
 

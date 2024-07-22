@@ -7,12 +7,13 @@ import { nanoid } from "@/lib/utils";
 import { usePathname,useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import AiResponse from "./messageAI";
-
+import { useBuildSessionStore } from "@/stores/useBuildSession";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 interface ComponentType {
   component: React.ComponentType;
 }
 
-const ChatPageClient = ({session}) => {
+const ChatPageClient = ({session}:any) => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     // const [componentVersions, setComponentVersions] = useState([]);
@@ -24,7 +25,7 @@ const ChatPageClient = ({session}) => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const containsChatSessionId = searchParams.get('chatSessionId')
-
+    const prompt = JSON.parse(window.localStorage.getItem('prompt') || '')
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
@@ -37,7 +38,7 @@ const ChatPageClient = ({session}) => {
       const data = await response.json();
       setLoadedComponents([...Array(data.items.length).keys()].map(e => false));
       const imports = data.items.map(async (component) => {
-        // Construct the import path for each child component
+      // Construct the import path for each child component
         
         try {
           // Use dynamic import to load the component, and catch any errors
@@ -80,12 +81,11 @@ const ChatPageClient = ({session}) => {
       }
     }
     ,[session, searchParams])
-
     const handleSubmission =  async (e:any) =>{
       e.preventDefault()
       
       const userDescription = input.trim()
-        if (!userDescription) return
+      if (!userDescription) return
       setInput('')
       // Add user message to UI state
       setMessages((currentMessages:any) => [
@@ -96,7 +96,12 @@ const ChatPageClient = ({session}) => {
         }
       ])
       setProcessing(true);
-      const res = await generateNewComponent(userDescription);
+      // we could set the bsession active here!!
+      const res = await submitUserMessage({
+        content: userDescription,
+        currentBuildSession: prompt.buildSessionId,
+        generationRequest: true
+      });
       if (res) {
         fetchComponents();
         setProcessing(false);

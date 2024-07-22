@@ -30,7 +30,6 @@ export async function authenticate(
     try {
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-        console.log(`Attempting authentication for email: ${email.slice(0, 3)}...`);
 
         const parsedCredentials = z
             .object({
@@ -52,7 +51,6 @@ export async function authenticate(
                     resultCode: ResultCode.UserLoggedIn
                 };
             } catch(e){
-                console.log(e, 'cacaca')
                 return {
                     type: 'error',
                     resultCode: ResultCode.InvalidCredentials,

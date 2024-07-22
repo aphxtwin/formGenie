@@ -13,7 +13,8 @@ export const AuthButton: React.FC<AuthButtonProps> = ({session})=> {
         return (
             <form action={async ()=>{
                 'use server'
-                await signOut()
+                await signOut({redirect:true, redirectTo:'/'})
+                
             }}>
                 <button className={authStyle}>
                     Log Out

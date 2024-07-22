@@ -19,14 +19,18 @@ export default function LoginForm({ session }: { session: Session }) {
   const [storedInput, __] = useLocalStorage('prompt',{})
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   const isStored = Object.keys(storedInput).length > 0
+
   useEffect(() => {
     if (result) {
-      
       if (result.type === 'error') {
         toast.error(getMessageFromCode(result.resultCode))
       } else if (result.type === 'success') {
         toast.success(getMessageFromCode(result.resultCode))
-        router.refresh()
+        if (!chatId ){
+          router.push('/')
+        } else if (chatId) {
+          router.push(`/chat/${chatId}`)
+        }
       }
     }
   }, [result, router])
@@ -35,7 +39,8 @@ export default function LoginForm({ session }: { session: Session }) {
     // Retrieve the stored input value from localStorage
     if (isStored  && !session) {
       router.push(`/login?chatSessionId=${chatId}`)
-    }
+    } 
+
   }, [])
 
   return (
