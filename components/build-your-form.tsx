@@ -81,10 +81,10 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                     })
             
                 if (responseMessage) {
-                    const buildSessionId = responseMessage.buildSessionId
+                    const buildSessionId = responseMessage.buildSession
                     if(responseMessage.type === 'session') {
                         // No session but saves the prompt and generates a buildSessionId
-                        setStoredInput({prompt:value,buildSessionId:buildSessionId})
+                        setStoredInput({prompt:value,buildSessionId})
                         router.push(`/login?chatSessionId=${buildSessionId}`)
                     } else {
                         setMessages(currentMessages => [...currentMessages, responseMessage])

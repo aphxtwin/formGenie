@@ -40,7 +40,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
     if (storedInput && Object.keys(storedInput).length> 0 && !session) {
       setUserInput(storedInput);
       console.log(storedInput)
-      router.push(`/signup?chatSessionId=${storedInput.buildSessionId}`)
+      router.push(`/signup?chatSessionId=${storedInput.buildSessionId} `);
     }
   }, [session,storedInput])
 
@@ -90,7 +90,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
         </div>
         <div className="flex justify-center items-center pt-6">
           <span className="pr-1">Already have an account?</span>
-          <button onClick={()=>router.push("/login")} className="text-blue-500 font-bold underline">Sign In</button>
+          <button onClick={()=>router.push('/login' )} className="text-blue-500 font-bold underline">Sign In</button>
       </div>
 
     </div>

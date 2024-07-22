@@ -10,13 +10,18 @@ import Image from 'next/image';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage'
 import { Session } from '@/lib/types'
 
+interface StoredInput {
+  buildSessionId?: string;
+  // Add other properties as needed
+}
+
 
 export default function LoginForm({ session }: { session: Session }) {
   const router= useRouter()
   const searchPararms = useSearchParams()
   const chatId = searchPararms?.get('chatSessionId') || undefined;
   const [result,dispatch] = useFormState(authenticate,undefined);
-  const [storedInput, __] = useLocalStorage('prompt',{})
+  const [storedInput, __] = useLocalStorage<StoredInput>('prompt',{})
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   const isStored = Object.keys(storedInput).length > 0
 
@@ -36,12 +41,13 @@ export default function LoginForm({ session }: { session: Session }) {
   }, [result, router])
 
   useEffect(() => {
-    // Retrieve the stored input value from localStorage
-    if (isStored  && !session) {
-      router.push(`/login?chatSessionId=${chatId}`)
-    } 
-
-  }, [])
+    if (isStored && !session) {
+      const storedBuildSessionId = storedInput.buildSessionId;
+      if (storedBuildSessionId) {
+        router.push(`/login?chatSessionId=${storedBuildSessionId}`);
+      }
+    }
+  }, [isStored, session, storedInput, router]);
 
   return (
       <div className="flex flex-col">
@@ -88,7 +94,8 @@ export default function LoginForm({ session }: { session: Session }) {
           </div>
           <div className="flex justify-center items-center pt-6">
             <span className="pr-1">Don&#39;t have an account?</span>
-            <button onClick={()=>router.push(`/signup`)} className="text-blue-500 font-bold underline">Create account</button>
+            <button onClick={()=>router.push(`signup?`)} className="text-blue-500 font-bold underline">Create account</button>
+            
         </div>
   
       </div>

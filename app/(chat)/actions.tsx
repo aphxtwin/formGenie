@@ -64,10 +64,10 @@ async function submitUserMessage(
   let buildSession = currentBuildSession;
 
   if (!session || !session.user) {
-    buildSessionId = nanoid();
+    buildSession = nanoid();
     return {
       type: 'session',
-      buildSessionId
+      buildSession
     }
   }
 

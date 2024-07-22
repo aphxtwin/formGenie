@@ -144,7 +144,7 @@ const ChatPageClient = ({session}:any) => {
                     <div className="flex flex-col justify-center items-center h-full">
                       <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
                       <div className='my-2'>
-                        <div className=' flex items-center justify-center overflow-y-hidden w-[510px] h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
+                        <div className='flex flex-col items-center justify-center overflow-y-hidden w-[510px] h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
                           
                           {loadedComponents.map((component, index) => (
                             <div className="w-full" key={index}>
