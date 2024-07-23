@@ -50,7 +50,12 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const [disabled, setDisabled] = useState(false);
     const router = useRouter();
     const {submitUserMessage} = useActions();
-    const [storedInput, setStoredInput] = useLocalStorage('prompt',{})
+    interface StoredInput {
+        prompt?: string;
+        buildSessionId?: string;
+    }
+    
+    const [storedInput, setStoredInput] = useLocalStorage<StoredInput>('prompt',{})
 
     const [flashlight, setFlashlight] = useState(false)
 
@@ -75,9 +80,9 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
         if(value){
             try{
                 const responseMessage = await submitUserMessage({ 
-                        content:value,
-                        currentBuildSession:null,
-                        generationRequest:false 
+                    content:value,
+                    currentBuildSession:storedInput? storedInput.buildSessionId : null,
+                    generationRequest:false 
                     })
             
                 if (responseMessage) {

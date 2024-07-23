@@ -63,6 +63,8 @@ async function submitUserMessage(
   const { content, currentBuildSession, generationRequest } = message;
   let buildSession = currentBuildSession;
 
+
+
   if (!session || !session.user) {
     buildSession = nanoid();
     return {
@@ -81,19 +83,21 @@ async function submitUserMessage(
     // in the db
     await createBuildSession(buildSession, creatorId);
 
-  } else {
-    console.log('has buildSessionId')
+  } 
+
+  const userMessage: Message = {
+    id: nanoid(),
+    role: 'user',
+    content: content
   }
+
+  await saveMessage(userMessage.id, content,buildSession,'USER');
 
   aiState.update({
     ...aiState.get(),
     messages: [
       ...aiState.get().messages,
-      {
-        id: nanoid(),
-        role:'user',
-        content
-      }
+      userMessage
     ]
   });
 
@@ -115,6 +119,8 @@ async function submitUserMessage(
   // if is message
   try {
     if(content){
+      const uniqueId = nanoid();
+      let fullAiText = '';
       const result = await streamUI({
         model: openai('gpt-3.5-turbo'),
         initial: <AiResponse content={<div className='animate-pulse'>Reasoning...</div>}/>,
@@ -134,10 +140,6 @@ async function submitUserMessage(
           The goal is to create an accurate form that meets the user purpose
           
           `,
-        // async onFinish({result,text}:any){
-        //   // await saveMessage(buildingSession.id, {role:'assistant', content:result})
-        //   console.log('hello moto')
-        // },
         messages: [
           ...aiState.get().messages.map((message:any) => ({
             role: message.role,
@@ -146,7 +148,7 @@ async function submitUserMessage(
           }))
         ],
         text: ({ content, done }) => {
-    
+          fullAiText = content;
           if (done) {
             aiState.done({
               ...aiState.get(),
@@ -155,17 +157,20 @@ async function submitUserMessage(
                 {
                   id: nanoid(),
                   role: 'assistant',
-                  content
+                  content: fullAiText
                 }
               ]
             })
           } 
           return <AiResponse content={content}/>
         },
+        onFinish: async (text) => {
+          // Implement your storage logic here
+          await saveMessage(uniqueId, fullAiText, buildSession, 'ASSISTANT');
+        }
       });
-      console.log(result)
       return {
-        id:nanoid(),
+        id:uniqueId,
         display: result.value,
         buildSession
       }

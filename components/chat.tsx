@@ -100,7 +100,7 @@ const ChatPageClient = ({session}:any) => {
       const res = await submitUserMessage({
         content: userDescription,
         currentBuildSession: prompt.buildSessionId,
-        generationRequest: true
+        generationRequest: false
       });
       if (res) {
         fetchComponents();

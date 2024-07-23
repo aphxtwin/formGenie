@@ -106,7 +106,7 @@ model BuildSession{
 }
 
 model Message {
-  id       Int     @id @default(autoincrement())
+  id       String     @id 
   content  String
   role     Role
   timestamp  DateTime @default(now())

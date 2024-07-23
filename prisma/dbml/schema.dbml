@@ -93,7 +93,7 @@ Table BuildSession {
 }
 
 Table Message {
-  id Int [pk, increment]
+  id String [pk]
   content String [not null]
   role Role [not null]
   timestamp DateTime [default: `now()`, not null]

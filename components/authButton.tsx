@@ -6,16 +6,14 @@ import { signOut } from '@/auth';
 const authStyle = "bg-neutral-900 hover:bg-neutral-500 py-[7px] transition duration-300 ease-in-out text-white px-5 rounded-lg font-semibold";
 interface AuthButtonProps {
     session: Session
+    signOut: ()=>void
 }
 
-export const AuthButton: React.FC<AuthButtonProps> = ({session})=> {
+
+export const AuthButton: React.FC<AuthButtonProps> = ({session,signOut})=> {
     if (session) {
         return (
-            <form action={async ()=>{
-                'use server'
-                await signOut({redirect:true, redirectTo:'/'})
-                
-            }}>
+            <form action={signOut}>
                 <button className={authStyle}>
                     Log Out
                 </button>

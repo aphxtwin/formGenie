@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
 import { Session } from '@/lib/types'
-
+import { Role } from '@prisma/client'
 export async function createBuildSession(buildSessionId: string, userId: any) {
     const session = (await auth()) as Session
 
@@ -32,7 +32,7 @@ export async function createBuildSession(buildSessionId: string, userId: any) {
 }
 
 
-export async function saveMessage(text, buildSessionId){
+export async function saveMessage(messageId:string, content:string, buildSessionId:string, role:Role) {
     `
     In order to save a message requisites:
     1. The user must be authenticated
@@ -43,11 +43,24 @@ export async function saveMessage(text, buildSessionId){
     `
     const session = (await auth()) as Session
 
-    if (session) {
-        console.log('session', session)
-    } else {
-        return null
-    }
+    if (!session) return null;
+    
+    return await prisma.message.create({
+        data: {
+            id: messageId,
+            content,
+            role,
+            buildingSessionId:buildSessionId,
 
+        }
+    })
 
 }
+
+
+export async function getMessagesForBuildSession(buildSessionId: string) {
+    return await prisma.message.findMany({
+      where: { buildingSessionId: buildSessionId },
+      orderBy: { timestamp: 'asc' },
+    });
+  }

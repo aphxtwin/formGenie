@@ -10,6 +10,7 @@ import { getMessageFromCode } from "@/lib/utils";
 import { IconSpinner } from "./ui/icons";
 import { Session } from "@/lib/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { StoredInput } from "./loginForm";
 // import { useActions } from "ai/rsc";
 
 interface SignUpProps{
@@ -20,7 +21,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
   const router = useRouter();
   const [userInput, setUserInput] = useState<string>('')
   const [result,dispatch] = useFormState(signUp,undefined);
-  const [storedInput,_] = useLocalStorage('prompt',null)
+  const [storedInput,_] = useLocalStorage<StoredInput>('prompt', {})
   
   const inputFieldsStyle = 'min-w-[18rem] border-[3px] border-black rounded-lg bg-inherit px-3 py-2 mt-3';
   
@@ -30,7 +31,12 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
         toast.error(getMessageFromCode(result.resultCode))
       } else if (result.type === 'success') {
         toast.success(getMessageFromCode(result.resultCode))
-        router.refresh()
+        
+        if(storedInput?.buildSessionId){
+          router.push(`chat/${storedInput.buildSessionId}`)}
+          else{
+            router.push('/')
+          }
       }
     }
   }, [result,router])
@@ -39,8 +45,7 @@ const SignUp: React.FC<SignUpProps> = ({session})=> {
     // Retrieve the stored input value from localStorage
     if (storedInput && Object.keys(storedInput).length> 0 && !session) {
       setUserInput(storedInput);
-      console.log(storedInput)
-      router.push(`/signup?chatSessionId=${storedInput.buildSessionId} `);
+      router.push(`/signup?chatSessionId=${storedInput.buildSessionId}`);
     }
   }, [session,storedInput])
 

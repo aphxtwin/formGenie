@@ -10,7 +10,8 @@ import Image from 'next/image';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage'
 import { Session } from '@/lib/types'
 
-interface StoredInput {
+export interface StoredInput {
+  prompt?: string;
   buildSessionId?: string;
   // Add other properties as needed
 }
