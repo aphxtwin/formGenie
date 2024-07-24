@@ -18,14 +18,14 @@ export default function MainPage({session, signOut}:any) {
         {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={()=>setIsOpen(!isOpen)}></div>
         )}
-        
-        <div
-        className={`fixed h-[80%] w-[80%]  inset-x-1/6 bg-white shadow-2xl z-[100] transition-transform duration-300 ease-in-out transform ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        <MenuContent toggleMenu={()=>setIsOpen(!isOpen)}/>
-        </div>
+            <div
+            className={`fixed h-[95%] w-[95%] rounded-xl mx-[3%] my-[1%]  bg-white shadow-2xl z-[100]  transition-transform duration-300 ease-in-out transform ${
+            isOpen ? 'translate-y-0' : 'translate-y-[105.5%]'
+            }`}
+        >
+            <MenuContent session={session} toggleMenu={()=>setIsOpen(!isOpen)}/>
+            </div>
+
         <div className="flex justify-center pt-[5rem]">
             <BuildYourForm session={session} /> 
         </div>
