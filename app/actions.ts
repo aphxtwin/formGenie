@@ -7,7 +7,7 @@ export async function createBuildSession(buildSessionId: string, userId: any) {
 
     if (session) {
         try{
-            const buildSession = await prisma.buildSession.create({
+            const buildSession = await prisma?.buildSession.create({
                 data: {
                     id: buildSessionId,
                     user: {
@@ -45,7 +45,7 @@ export async function saveMessage(messageId:string, content:string, buildSession
 
     if (!session) return null;
     
-    return await prisma.message.create({
+    return await prisma?.message.create({
         data: {
             id: messageId,
             content,
@@ -59,8 +59,16 @@ export async function saveMessage(messageId:string, content:string, buildSession
 
 
 export async function getMessagesForBuildSession(buildSessionId: string) {
-    return await prisma.message.findMany({
+    return await prisma?.message.findMany({
       where: { buildingSessionId: buildSessionId },
       orderBy: { timestamp: 'asc' },
     });
-  }
+}
+
+
+export async function getAllBuildSessionsFromUser(userId: string) {
+    return await prisma?.buildSession.findMany({
+        where: { userId },
+        orderBy: { updatedAt: 'asc' },
+    });
+}

@@ -17,9 +17,8 @@ const authConfig = {
       if (isLoggedIn) {
         if (isOnLoginPage || isOnSignupPage) {
           if(containschatSessionId) {
-            console.log('redirecting to chat')
             const chatSessionId = nextUrl.searchParams.get('chatSessionId')
-            console.log(chatSessionId, 'chatSessionId')
+  
             return Response.redirect(new URL(`/chat/${chatSessionId}`, nextUrl))
           }
           return Response.redirect(new URL('/', nextUrl))

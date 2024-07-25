@@ -4,11 +4,8 @@ import PromptForm from "@/components/prompt-form";
 import UserResponse from "@/components/messageUser";
 import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { nanoid } from "@/lib/utils";
-import { usePathname,useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import AiResponse from "./messageAI";
-import { useBuildSessionStore } from "@/stores/useBuildSession";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 interface ComponentType {
   component: React.ComponentType;
 }
@@ -68,9 +65,9 @@ const ChatPageClient = ({session}:any) => {
     };
 
 
-    useEffect(() => {
-      fetchComponents()
-    }, []);
+    // useEffect(() => {
+    //   fetchComponents()
+    // }, []);
 
     useEffect(() => {
       if(session?.user){

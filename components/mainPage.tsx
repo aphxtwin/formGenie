@@ -4,15 +4,16 @@ import BuildYourForm from "./build-your-form";
 import GradientButton from "./menuButton";
 import { AuthButton } from "./authButton";
 import MenuContent from "./menuContent";
-export default function MainPage({session, signOut}:any) {
-    const [isOpen, setIsOpen] = useState(false);
 
+export default function MainPage({session}:any) {
+    const [isOpen, setIsOpen] = useState(false);
+    console.log(isOpen)
 
     return (
         <div className="grid grid-rows-[1fr_3fr] min-h-screen">
         <div>
-            <div className="flex justify-end w-full p-3">
-                {session? <GradientButton onClick={()=>setIsOpen(!isOpen)}/>:<AuthButton signOut={signOut} session={session}/>}
+            <div className="flex justify-end p-3">
+                {session ? <GradientButton onClick={()=>setIsOpen(!isOpen)}/>:<AuthButton className={'px-[2rem]'} session={session}/>}
             </div>
         </div>
         {isOpen && (

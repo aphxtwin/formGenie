@@ -64,7 +64,6 @@ async function submitUserMessage(
   let buildSession = currentBuildSession;
 
 
-
   if (!session || !session.user) {
     buildSession = nanoid();
     return {
@@ -186,8 +185,6 @@ async function submitUserMessage(
 }
 
 
-
-
 export type AIState = {
   chatId: string
   messages: Message[]
@@ -204,4 +201,6 @@ export const AI = createAI<AIState, UIState>({
   },
   initialUIState: [],
   initialAIState: {chatId:nanoid(), messages:[]},
+  
 });
+
