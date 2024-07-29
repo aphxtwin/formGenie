@@ -2,6 +2,11 @@ import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
 import { Session } from '@/lib/types'
 import { Role } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+
+type BuildSessionSelect = Partial<Record<keyof Prisma.BuildSessionSelect, boolean>>;
+
+
 export async function createBuildSession(buildSessionId: string, userId: any) {
     const session = (await auth()) as Session
 
@@ -66,9 +71,36 @@ export async function getMessagesForBuildSession(buildSessionId: string) {
 }
 
 
-export async function getAllBuildSessionsFromUser(userId: string) {
+export async function getAllBuildSessionsFromUser(
+    userId: string,
+    options: {
+        select?: BuildSessionSelect;
+        orderBy?: 'asc' | 'desc';
+        limit?: number;
+        offset?: number;
+        cacheTTL?: number;
+        cacheSWR?: number;
+      } = {}
+) {
+    const {
+        select,
+        orderBy,
+        limit,
+        offset,
+        cacheTTL,
+        cacheSWR,
+      } = options;
+    
+    console.log('getting all build sessions from user')
     return await prisma?.buildSession.findMany({
         where: { userId },
-        orderBy: { updatedAt: 'asc' },
+        select,
+        orderBy: { updatedAt: orderBy || 'asc' },
+        take: limit || 10,
+        skip: offset || 0,
+        cacheStrategy: {
+            ttl: cacheTTL ||75,
+            swr: cacheSWR ||120,
+        },
     });
 }

@@ -48,7 +48,6 @@ export const { auth, signIn, signOut } = NextAuth({
                     const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
     
                     if (hashedPassword === user?.password){
-                        console.log('ok creds', user)
                         return user
                     } else {
                         console.error('wrong password')

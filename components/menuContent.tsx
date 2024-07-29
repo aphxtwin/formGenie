@@ -1,6 +1,7 @@
-
-import React from 'react'
+'use client'
+import React, {useState} from 'react'
 import { AuthButton } from './authButton'
+import Link from 'next/link'
 
 function SectionWrapper({children}:any) {
     return (
@@ -21,11 +22,11 @@ function ButtonWrapper ({children}:any) {
 
 }
 
-function MenuContent({ toggleMenu, session }: any) {
+function MenuContent({ toggleMenu, session, buildSessions }: any) {
 
     if (!session) return null
 
-    const  {name, email, image, id} = session.user
+    const  {email} = session.user
 
   return (
         <div className="py-3 px-4 flex flex-col h-full ">
@@ -43,7 +44,22 @@ function MenuContent({ toggleMenu, session }: any) {
                     <h3>Library</h3>
             </ButtonWrapper>
             <SectionWrapper>
-
+            {buildSessions.length > 0 
+                        ?
+                        buildSessions.map((session:any) => (
+                            <div key={session.id} className='flex items-center space-x-2'>
+                                <Link href={`chat/${session.id}`}>
+                                    {`chat/${session.id}`}
+                                </Link>
+                                
+                            </div>
+                        ))
+                        : 
+                        <div className='flex flex-col h-full items-center justify-center space-y-3'>
+                            <p className='text-gray-600'>It seems like we didn't build anything together yet</p>
+                            <button className='bg-gradient-to-r font-semibold hover:opacity-80 transition-all duration-300 from-red-500 via-pink-500 to-blue-500 text-white px-3 py-2 rounded' onClick={()=>toggleMenu(false)}>Start a build session!</button>
+                        </div>
+                    }
             </SectionWrapper>
             </div>
 
@@ -52,7 +68,7 @@ function MenuContent({ toggleMenu, session }: any) {
                 <SectionWrapper>
                     <div className='flex flex-col items-center  h-full'>
                         {email}
-                        <AuthButton className='px-[4rem]' session={session}/>
+                        <AuthButton setIsOpen={toggleMenu} className='px-[4rem]' session={session}/>
                     </div>
                 </SectionWrapper>
             </div>

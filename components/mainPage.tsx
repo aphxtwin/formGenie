@@ -5,15 +5,14 @@ import GradientButton from "./menuButton";
 import { AuthButton } from "./authButton";
 import MenuContent from "./menuContent";
 
-export default function MainPage({session}:any) {
+export default function MainPage({session, buildSessions}:any) {
     const [isOpen, setIsOpen] = useState(false);
-    console.log(isOpen)
 
     return (
         <div className="grid grid-rows-[1fr_3fr] min-h-screen">
         <div>
             <div className="flex justify-end p-3">
-                {session ? <GradientButton onClick={()=>setIsOpen(!isOpen)}/>:<AuthButton className={'px-[2rem]'} session={session}/>}
+                {session ? <GradientButton onClick={()=>setIsOpen(!isOpen)}/>:<AuthButton setIsOpen={setIsOpen} className={'px-[2rem]'} session={session}/>}
             </div>
         </div>
         {isOpen && (
@@ -24,7 +23,7 @@ export default function MainPage({session}:any) {
             isOpen ? 'translate-y-0' : 'translate-y-[105.5%]'
             }`}
         >
-            <MenuContent session={session} toggleMenu={()=>setIsOpen(!isOpen)}/>
+            <MenuContent session={session} buildSessions={buildSessions} toggleMenu={()=>setIsOpen(!isOpen)}/>
             </div>
 
         <div className="flex justify-center pt-[5rem]">

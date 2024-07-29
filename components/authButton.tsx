@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link'
 import { Session } from "@/lib/types"
 import { Puertita } from "@/components/ui/icons";
@@ -11,12 +12,18 @@ const authStyle = "bg-neutral-900 hover:bg-neutral-500 py-[7px] transition durat
 interface AuthButtonProps {
     session: Session
     className?: string
+    setIsOpen: (isOpen: boolean) => void
 }
 
-export const AuthButton: React.FC<AuthButtonProps> = ({className='', session})=> {
+export const AuthButton: React.FC<AuthButtonProps> = ({className, session, setIsOpen})=> {
+    
+    const handleClick = ()=>{
+        handleSignOut()
+        setIsOpen(false)
+    }
     if (session) {
         return (
-            <form action={handleSignOut}>
+            <form action={handleClick}>
                 <button className={cn
                     (
                         authStyle, className || ''

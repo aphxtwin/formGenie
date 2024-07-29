@@ -11,7 +11,7 @@ variable: "--font-sans",
 
 
 export const metadata: Metadata = {
-  title: "Form Genie",
+  title: "Formaggio 🧀",
   description: "Gain insights from data",
 };
 
