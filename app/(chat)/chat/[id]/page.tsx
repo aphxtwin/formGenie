@@ -2,8 +2,16 @@ import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import ChatPageClient from '@/components/chat';
 import { Session } from '@/lib/types';
+import {AI} from '../../actions';
+import { loadBsFromDb } from '@/app/actions';
 
-const ChatPage = async () => {
+export interface ChatPageProps {
+  params: {
+    id: string
+  }
+}
+
+const ChatPage = async ({params}:ChatPageProps ) => {
 
   const session = (await auth()) as Session
 
@@ -12,7 +20,15 @@ const ChatPage = async () => {
     redirect(`/login`);
   }
 
-  return <ChatPageClient session={session} />;
+  const chat = await loadBsFromDb(session.user.id, params.id);
+
+  return (
+    <AI initialAIState={chat}>
+      <ChatPageClient session={session} />
+    </AI>
+  )
+
+  
 };
 
 export default ChatPage;

@@ -60,6 +60,7 @@ model User {
   sessions      Session[]
   buildingSessions BuildSession[]
   components    Component[]
+  messages Message[]
 }
 
 model VerificationToken {
@@ -83,7 +84,7 @@ model Component {
   logs        String?
   buildSessionId String @unique
   buildSession BuildSession @relation(fields: [buildSessionId], references: [id])
-  user     User?   @relation(fields: [creatorId], references: [id])
+  user     User?   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String?
 }
 
@@ -103,7 +104,7 @@ model BuildSession{
   deletedAt DateTime?
   messages Message[]
   component Component?
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -112,6 +113,8 @@ model Message {
   role     Role
   timestamp  DateTime @default(now())
   buildingSessionId String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   buildingSession BuildSession @relation(fields: [buildingSessionId], references: [id])
 }
 

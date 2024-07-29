@@ -45,6 +45,7 @@ Table User {
   sessions Session [not null]
   buildingSessions BuildSession [not null]
   components Component [not null]
+  messages Message [not null]
 }
 
 Table VerificationToken {
@@ -98,6 +99,8 @@ Table Message {
   role Role [not null]
   timestamp DateTime [default: `now()`, not null]
   buildingSessionId String [not null]
+  userId String [not null]
+  user User [not null]
   buildingSession BuildSession [not null]
 }
 
@@ -112,8 +115,10 @@ Ref: Session.userId > User.id [delete: Cascade]
 
 Ref: Component.buildSessionId - BuildSession.id
 
-Ref: Component.creatorId > User.id
+Ref: Component.creatorId > User.id [delete: Cascade]
 
-Ref: BuildSession.userId > User.id
+Ref: BuildSession.userId > User.id [delete: Cascade]
+
+Ref: Message.userId > User.id [delete: Cascade]
 
 Ref: Message.buildingSessionId > BuildSession.id

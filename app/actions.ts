@@ -22,6 +22,7 @@ export async function createBuildSession(buildSessionId: string, userId: any) {
                     },
                 }
             })
+            console.log('created build session')
             return buildSession
         } catch(e){
             console.log(e)
@@ -49,18 +50,26 @@ export async function saveMessage(messageId:string, content:string, buildSession
     const session = (await auth()) as Session
 
     if (!session) return null;
-    
+    console.log('saving message')
+
     return await prisma?.message.create({
         data: {
             id: messageId,
             content,
             role,
-            buildingSessionId:buildSessionId,
-
+            buildingSession: {
+                connect:{
+                    id: buildSessionId
+                }
+            },
+            user: {
+                connect: { id: session.user.id }
+            }
         }
-    })
+    });
 
 }
+
 
 
 export async function getMessagesForBuildSession(buildSessionId: string) {
@@ -102,5 +111,20 @@ export async function getAllBuildSessionsFromUser(
             ttl: cacheTTL ||75,
             swr: cacheSWR ||120,
         },
+    });
+}
+
+
+export const loadBsFromDb = async (bsId:any, userId:any) => {
+    if (!userId) return null;
+
+    return await prisma?.message.findMany({
+        where:{
+            AND:[
+                { buildingSessionId: bsId},
+                {userId},
+            ],
+        },
+        orderBy: { timestamp: 'asc' },
     });
 }

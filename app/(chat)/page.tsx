@@ -9,7 +9,7 @@ export default async function ChatPage() {
     const session = (await auth()) as Session
 
 
-    const buildSessions = await getAllBuildSessionsFromUser(session.user.id, {select:{id:true}});
+    const buildSessions = await getAllBuildSessionsFromUser(session?.user.id, {select:{id:true}});
 
     return (
         <MainPage buildSessions={buildSessions} session={session} />

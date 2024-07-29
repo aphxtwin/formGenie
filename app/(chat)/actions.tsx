@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { nanoid } from '@/lib/utils';
 import { Message, Session } from '@/lib/types';
 import { redirect } from "next/navigation";
-import { createBuildSession, saveMessage } from '../actions';
+import { createBuildSession, loadBsFromDb, saveMessage } from '../actions';
 import { auth} from '@/auth';
 
 
@@ -81,7 +81,6 @@ async function submitUserMessage(
     buildSession = nanoid();
     // in the db
     await createBuildSession(buildSession, creatorId);
-
   } 
 
   const userMessage: Message = {

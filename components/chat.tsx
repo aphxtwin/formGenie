@@ -40,7 +40,9 @@ const ChatPageClient = ({session}:any) => {
         try {
           // Use dynamic import to load the component, and catch any errors
           let myModule
-          try {            
+          try {
+            // If we want microservices we need to change this
+            // this gets components from this same repo.            
             myModule = await import(`@/openv0/webapp/src/components/openv0_generated/${component.name}/${component.name}_${component.latest}.tsx`);
 
           } catch(e) {
@@ -59,15 +61,15 @@ const ChatPageClient = ({session}:any) => {
       });
   
       Promise.all(imports).then((components) => {
-        setLoadedComponents(components.filter(e=>e));
+        setLoadedComponents(components);
       });
   
     };
 
 
-    // useEffect(() => {
-    //   fetchComponents()
-    // }, []);
+    useEffect(() => {
+      fetchComponents()
+    }, []);
 
     useEffect(() => {
       if(session?.user){
@@ -78,6 +80,7 @@ const ChatPageClient = ({session}:any) => {
       }
     }
     ,[session, searchParams])
+
     const handleSubmission =  async (e:any) =>{
       e.preventDefault()
       
@@ -97,7 +100,7 @@ const ChatPageClient = ({session}:any) => {
       const res = await submitUserMessage({
         content: userDescription,
         currentBuildSession: prompt.buildSessionId,
-        generationRequest: false
+        generationRequest: true
       });
       if (res) {
         fetchComponents();
@@ -106,10 +109,7 @@ const ChatPageClient = ({session}:any) => {
 
     }
 
-    useEffect(() => {
-      fetchComponents()
-    }
-    , [loadedComponents])
+
 
 
 
