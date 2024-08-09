@@ -97,11 +97,12 @@ model Fail {
 
 model BuildSession{
   id  String   @id @default(cuid()) @unique
-  // title String?
+  title String?
   userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
+  path String
   messages Message[]
   component Component?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

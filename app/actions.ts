@@ -117,7 +117,7 @@ export async function getAllBuildSessionsFromUser(
 
 export const loadBsFromDb = async (bsId:any, userId:any) => {
     if (!userId) return null;
-
+    console.log('loading build session from db')
     return await prisma?.message.findMany({
         where:{
             AND:[
@@ -126,5 +126,8 @@ export const loadBsFromDb = async (bsId:any, userId:any) => {
             ],
         },
         orderBy: { timestamp: 'asc' },
+        cacheStrategy:{
+            ttl: 60,
+        }
     });
 }

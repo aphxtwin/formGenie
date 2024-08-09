@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React, {useState, useEffect} from "react";
 import PromptForm from "@/components/prompt-form";
 import UserResponse from "@/components/messageUser";
@@ -22,7 +23,7 @@ const ChatPageClient = ({session}:any) => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const containsChatSessionId = searchParams.get('chatSessionId')
-    const prompt = JSON.parse(window.localStorage.getItem('prompt') || '')
+    // const prompt = JSON.parse(window.localStorage.getItem('prompt') || '')
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
@@ -117,11 +118,11 @@ const ChatPageClient = ({session}:any) => {
         <div className="h-lvh">
         <div className="bg-neutral-900 border-b-2 border-zinc-600 h-[60px]"></div>
 
-              <div className="grid grid-cols-2 gap-1">
+              <div className="flex flex-col md:grid grid-cols-2 gap-1 space-y-10">
                   
-                  <div className="col-span-1 h-[90vh]">
-                      <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-[80vh]">
-                      <div className="py-3 px-2 space-y-5">
+                  <div className="col-span-1 h-[61vh] md:h-[90vh]">
+                      <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-full md:h-[80vh]">
+                      <div className="h-full py-3 px-2 space-y-5">
                       {
                           messages.map((message:any) => (
                           <div key={message.id}>
@@ -131,17 +132,17 @@ const ChatPageClient = ({session}:any) => {
                       }
                       
                       </div>
-                              <div className="fixed left-9 bottom-6 ">
-                                  <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[600px]  max-h-[150px]`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
+                              <div className="flex justify-center  md:fixed left-9 bottom-6">
+                                  <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[85vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
                               </div>
                       </div>
                   </div>
 
-                  <div className="col-span-1 h-[90vh]">
+                  <div className="col-span-1 h-[50vh] md:h-[90vh]">
                     <div className="flex flex-col justify-center items-center h-full">
                       <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
                       <div className='my-2'>
-                        <div className='flex flex-col items-center justify-center overflow-y-hidden w-[510px] h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
+                        <div className='flex flex-col items-center justify-center overflow-y-hidden w-[80vw] md:w-[510px] h-[40vh] md:h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
                           
                           {loadedComponents.map((component, index) => (
                             <div className="w-full" key={index}>

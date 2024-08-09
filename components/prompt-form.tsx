@@ -44,7 +44,7 @@ export default function PromptForm({
 
   return (
     <div className='flex flex-row z-50'>
-        {isTheFirstMessage && <div className={`bg-gradient-to-r  from-red-400  via-pink-400 to-purple-400 absolute w-[530px] h-[60px] p-10 rounded-full blur-2xl`}></div>}
+        {isTheFirstMessage && <div className={`bg-gradient-to-r  from-red-400  via-pink-400 to-purple-400 absolute w-[530px] h-[60px] p-10 rounded-full blur-xl`}></div>}
           <form 
             className={`flex`}
             onSubmit={handleSubmit}

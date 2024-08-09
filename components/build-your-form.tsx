@@ -122,8 +122,8 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     return (
         <div className={`flex flex-col items-center`}>
            <FlashlightOverlay isVisible={flashlight} />
-            <div className="text-center space-y-9">
-                <h1 className="text-7xl font-semibold tracking-tight from-blue to-red-500">Build Your Form</h1>
+            <div className="text-center space-y-8">
+                <h1 className="text-6xl font-semibold tracking-tight from-blue to-red-500">Build Your Form</h1>
                 <PromptForm 
                     setFlashlight={setFlashlight} 
                     setInput={setInput}
@@ -131,7 +131,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                     isTheFirstMessage={true}
                     handleInputChange={handleInputChange} 
                     handleSubmit={handleSubmission} 
-                    className='w-[515px] max-h-[202px]'
+                    className='w-[530px] h-[4rem]'
                     input={input} 
                     flashlight={flashlight}/>
             </div>

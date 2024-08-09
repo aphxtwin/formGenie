@@ -136,7 +136,6 @@ async function submitUserMessage(
           5. Design of the form (colors)
           -make the questions clear and concise don't overwhelm the user
           The goal is to create an accurate form that meets the user purpose
-          
           `,
         messages: [
           ...aiState.get().messages.map((message:any) => ({
@@ -185,8 +184,8 @@ async function submitUserMessage(
 
 
 export type AIState = {
-  chatId: string
-  messages: Message[]
+  buildSessionId: string
+  messages: any
 }
 
 export type UIState = {
@@ -199,7 +198,30 @@ export const AI = createAI<AIState, UIState>({
     submitUserMessage,
   },
   initialUIState: [],
-  initialAIState: {chatId:nanoid(), messages:[]},
-  
+  initialAIState: {buildSessionId:nanoid(), messages:[]},
+  onGetUIState: async (chatId) => {
+    'use server'
+    const session = (await auth()) as Session;
+    if (session && session.user) {
+      
+    }
+  },
+  /*
+  The AI state can be saved using the [onSetAIState] callback,
+  which gets called whenever the AI state is updated. In the 
+  following example, you save the chat history to a database 
+  whenever the generation is marked as done.
+  */
+ onSetAIState: async ({ state })=> {
+  'use server';
+  const session = (await auth()) as Session;
+  if (session && session.user) {
+    const {buildSessionId, messages} = state;
+    const createdAt = new Date()
+    const creatorId = session.user.id;
+    const chat = Chat
+  }
+
+ },
 });
 

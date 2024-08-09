@@ -14,17 +14,20 @@ export interface ChatPageProps {
 const ChatPage = async ({params}:ChatPageProps ) => {
 
   const session = (await auth()) as Session
-
+  
   if (!session?.user) {
     console.log('no session')
     redirect(`/login`);
   }
 
-  const chat = await loadBsFromDb(session.user.id, params.id);
-
+  const user = session.user;
+  console.log(params.id)
+  const chat = await loadBsFromDb(params.id, user?.id);
+  console.log(chat)
+  
   return (
-    <AI initialAIState={chat}>
-      <ChatPageClient session={session} />
+    <AI >
+      <ChatPageClient initialAIState={{chatId:chat?.id, user:user.id}} session={session} />
     </AI>
   )
 

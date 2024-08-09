@@ -18,3 +18,13 @@ export interface Session {
     email: string
   }
 }
+
+export interface BuildSession extends Record<string, any> {
+  id: string
+  title: string
+  createdAt: Date
+  userId: string
+  path: string
+  messages: Message[]
+  sharePath?: string
+}
