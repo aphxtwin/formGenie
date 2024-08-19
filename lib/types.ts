@@ -2,7 +2,7 @@ import { CoreMessage } from 'ai'
 
 export type Message = CoreMessage & {
   id: string
-  
+
 }
 
 export interface User extends Record<string, any> {
@@ -26,5 +26,4 @@ export interface BuildSession extends Record<string, any> {
   userId: string
   path: string
   messages: Message[]
-  sharePath?: string
 }

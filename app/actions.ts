@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { Session } from '@/lib/types'
 import { Role } from '@prisma/client'
 import { Prisma } from '@prisma/client'
+import redis from '@/lib/redis';
 
 type BuildSessionSelect = Partial<Record<keyof Prisma.BuildSessionSelect, boolean>>;
 
@@ -11,18 +12,34 @@ export async function createBuildSession(buildSessionId: string, userId: any) {
     const session = (await auth()) as Session
 
     if (session) {
-        try{
-            const buildSession = await prisma?.buildSession.create({
-                data: {
+        const buildSessionKey = `buildSession:${buildSessionId}`
+        try {
+            // create a build session
+            // needs to be created with redis
+            // const buildSession = await prisma?.buildSession.create({
+            //     data: {
+            //         id: buildSessionId,
+            //         user: {
+            //             connect: {
+            //                 id: userId
+            //             }
+            //         },
+            //     }
+            // })
+            // const buildSession = await redis.hmset(buildSessionKey, {
+            //     id: buildSessionId,
+            //     userId,
+            //     createdAt: Date.now(),
+            // })
+            const buildSession = await redis.multi()
+            .hmset(buildSessionKey, {
                     id: buildSessionId,
-                    user: {
-                        connect: {
-                            id: userId
-                        }
-                    },
-                }
-            })
-            console.log('created build session')
+                    userId,
+                    createdAt: Date.now(),
+                })
+            .sadd(`user:${userId}:buildSessions`, buildSessionId)
+            .exec()
+
             return buildSession
         } catch(e){
             console.log(e)
@@ -51,28 +68,53 @@ export async function saveMessage(messageId:string, content:string, buildSession
 
     if (!session) return null;
     console.log('saving message')
-
-    return await prisma?.message.create({
-        data: {
+    const buildSessionKey = `buildSession:${buildSessionId}`
+    const messageKey = `${buildSessionKey}:message:${messageId}`
+    try{
+        const pipeline = redis.pipeline()
+        pipeline.hmset(messageKey,{
             id: messageId,
             content,
             role,
-            buildingSession: {
-                connect:{
-                    id: buildSessionId
-                }
-            },
-            user: {
-                connect: { id: session.user.id }
-            }
-        }
-    });
+            userId: session.user.id,
+            createdAt: Date.now(),
+        })
+        pipeline.zadd(`${buildSessionKey}:messages`, Date.now(), messageId)
+        const results = await pipeline.exec()
+
+        return results ? {id: messageId, content, role} : null
+        
+    } catch(e:any){
+        console.log(e)
+        return null
+    };
+    // this is the message that will be saved in the database
+    // needs to be stored with redis
+    // await prisma?.message.create({
+    //     data: {
+    //         id: messageId,
+    //         content,
+    //         role,
+    //         buildingSession: {
+    //             connect:{
+    //                 id: buildSessionId
+    //             }
+    //         },
+    //         user: {
+    //             connect: { id: session.user.id }
+    //         }
+    //     }
+    // });
+
+    redis 
 
 }
 
 
 
 export async function getMessagesForBuildSession(buildSessionId: string) {
+    // get all messages for a build session
+    // needs to be retrieved with redis
     return await prisma?.message.findMany({
       where: { buildingSessionId: buildSessionId },
       orderBy: { timestamp: 'asc' },
@@ -82,40 +124,29 @@ export async function getMessagesForBuildSession(buildSessionId: string) {
 
 export async function getAllBuildSessionsFromUser(
     userId: string,
-    options: {
-        select?: BuildSessionSelect;
-        orderBy?: 'asc' | 'desc';
-        limit?: number;
-        offset?: number;
-        cacheTTL?: number;
-        cacheSWR?: number;
-      } = {}
 ) {
-    const {
-        select,
-        orderBy,
-        limit,
-        offset,
-        cacheTTL,
-        cacheSWR,
-      } = options;
-    
-    console.log('getting all build sessions from user')
-    return await prisma?.buildSession.findMany({
-        where: { userId },
-        select,
-        orderBy: { updatedAt: orderBy || 'asc' },
-        take: limit || 10,
-        skip: offset || 0,
-        cacheStrategy: {
-            ttl: cacheTTL ||75,
-            swr: cacheSWR ||120,
-        },
-    });
+    const userBuildSessionKey = `user:${userId}:buildSessions`
+
+    // get all build sessions for a user
+    const buildSessionIds = await redis.smembers(userBuildSessionKey)
+    console.log('build session created')
+    if (!buildSessionIds) return null;
+
+    const buildSession = await Promise.all(
+        buildSessionIds.map(async (id)=>{
+            return await redis.hgetall(`buildSession:${id}`)}
+        )
+    )
+    console.log('buildSession', buildSession)
+    return buildSession
+
 }
 
 
 export const loadBsFromDb = async (bsId:any, userId:any) => {
+    // load build session from db
+    // needs to be retrieved with redis
+
     if (!userId) return null;
     console.log('loading build session from db')
     return await prisma?.message.findMany({
