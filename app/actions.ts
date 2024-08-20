@@ -8,11 +8,12 @@ import redis from '@/lib/redis';
 type BuildSessionSelect = Partial<Record<keyof Prisma.BuildSessionSelect, boolean>>;
 
 
-export async function createBuildSession(buildSessionId: string, userId: any) {
+export async function createBuildSession(buildSession:any) {
     const session = (await auth()) as Session
 
+    const {id, title, creatorId, createdAt, messages, path } = buildSession
     if (session) {
-        const buildSessionKey = `buildSession:${buildSessionId}`
+        const buildSessionKey = `buildSession:${id}`
         try {
             // create a build session
             // needs to be created with redis
@@ -33,13 +34,15 @@ export async function createBuildSession(buildSessionId: string, userId: any) {
             // })
             const buildSession = await redis.multi()
             .hmset(buildSessionKey, {
-                    id: buildSessionId,
-                    userId,
-                    createdAt: Date.now(),
+                    id,
+                    userId: creatorId,
+                    createdAt,
+                    title,
+                    path,
                 })
-            .sadd(`user:${userId}:buildSessions`, buildSessionId)
+            .sadd(`user:${creatorId}:buildSessions`, id)
             .exec()
-
+            console.log('build session created', buildSession)
             return buildSession
         } catch(e){
             console.log(e)
@@ -81,7 +84,7 @@ export async function saveMessage(messageId:string, content:string, buildSession
         })
         pipeline.zadd(`${buildSessionKey}:messages`, Date.now(), messageId)
         const results = await pipeline.exec()
-
+        console.log(results, 'results')
         return results ? {id: messageId, content, role} : null
         
     } catch(e:any){
@@ -106,19 +109,31 @@ export async function saveMessage(messageId:string, content:string, buildSession
     //     }
     // });
 
-    redis 
-
 }
 
 
 
-export async function getMessagesForBuildSession(buildSessionId: string) {
+export async function getMessagesFromBuildSession(buildSessionId: string) {
     // get all messages for a build session
     // needs to be retrieved with redis
-    return await prisma?.message.findMany({
-      where: { buildingSessionId: buildSessionId },
-      orderBy: { timestamp: 'asc' },
-    });
+    // return await prisma?.message.findMany({
+    //   where: { buildingSessionId: buildSessionId },
+    //   orderBy: { timestamp: 'asc' },
+    // });
+    const buildSessionKey = `buildSession:${buildSessionId}`;
+    const messagesKey = `buildSession:${buildSessionId}:messages`
+    const orderedMessagesIds = await redis.zrange(messagesKey, 0, -1)
+    const messages = await Promise.all(
+        orderedMessagesIds.map(async(messageId)=>{
+            const messageKey = `${buildSessionKey}:message:${messageId}`
+            const message = await redis.hgetall(messageKey)
+            return message
+        })
+    )
+    console.log('messages kkgongos', messages)
+    return messages
+
+    
 }
 
 
@@ -149,16 +164,31 @@ export const loadBsFromDb = async (bsId:any, userId:any) => {
 
     if (!userId) return null;
     console.log('loading build session from db')
-    return await prisma?.message.findMany({
-        where:{
-            AND:[
-                { buildingSessionId: bsId},
-                {userId},
-            ],
-        },
-        orderBy: { timestamp: 'asc' },
-        cacheStrategy:{
-            ttl: 60,
-        }
-    });
+
+    // First we check if the session exists for the user
+    const userBuildSessionKey = `user:${userId}:buildSessions`
+    const buildSessionExists = await redis.sismember(userBuildSessionKey, bsId)
+
+    if(!buildSessionExists){
+        console.log('doesn&t exist') 
+        return null
+    };
+    
+    const messages = await redis.hgetall(`buildSession:${bsId}`)
+    console.log('messages', messages)
+    return messages
 }
+
+
+    // return await prisma?.message.findMany({
+    //     where:{
+    //         AND:[
+    //             { buildingSessionId: bsId},
+    //             {userId},
+    //         ],
+    //     },
+    //     orderBy: { timestamp: 'asc' },
+    //     cacheStrategy:{
+    //         ttl: 60,
+    //     }
+    // });

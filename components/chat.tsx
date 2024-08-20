@@ -115,7 +115,7 @@ const ChatPageClient = ({session}:any) => {
 
 
     return (
-        <div className="h-lvh">
+        <div className="max-h-screen">
         <div className="bg-neutral-900 border-b-2 border-zinc-600 h-[60px]"></div>
 
               <div className="flex flex-col md:grid grid-cols-2 gap-1 space-y-10">
@@ -138,7 +138,7 @@ const ChatPageClient = ({session}:any) => {
                       </div>
                   </div>
 
-                  <div className="col-span-1 h-[50vh] md:h-[90vh]">
+                  <div className="col-span-1 h-[50vh] md:h-[80vh]">
                     <div className="flex flex-col justify-center items-center h-full">
                       <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
                       <div className='my-2'>

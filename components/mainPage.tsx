@@ -23,7 +23,7 @@ export default function MainPage({session, buildSessions}:any) {
             isOpen ? 'translate-y-0' : 'translate-y-[105.5%]'
             }`}
         >
-            <MenuContent session={session} buildSessions={buildSessions} toggleMenu={()=>setIsOpen(!isOpen)}/>
+            <MenuContent buildSessions={buildSessions} session={session} toggleMenu={()=>setIsOpen(!isOpen)}/>
             </div>
 
         <div className="flex justify-center pt-[5rem]">

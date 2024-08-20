@@ -4,7 +4,7 @@ import ChatPageClient from '@/components/chat';
 import { Session } from '@/lib/types';
 import {AI} from '../../actions';
 import { loadBsFromDb } from '@/app/actions';
-
+import { getMessagesFromBuildSession } from '@/app/actions';
 export interface ChatPageProps {
   params: {
     id: string
@@ -22,12 +22,11 @@ const ChatPage = async ({params}:ChatPageProps ) => {
 
   const user = session.user;
   console.log(params.id)
-  const chat = await loadBsFromDb(params.id, user?.id);
-  console.log(chat)
+  const messages = await getMessagesFromBuildSession(params.id)
   
   return (
-    <AI >
-      <ChatPageClient initialAIState={{chatId:chat?.id, user:user.id}} session={session} />
+    <AI initialAIState={{buildSessionId: params.id, messages}}>
+      <ChatPageClient session={session} />
     </AI>
   )
 

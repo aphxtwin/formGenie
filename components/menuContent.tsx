@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 function SectionWrapper({children}:any) {
     return (
-        <div className='border-[0.5px] bg-gray-100 border-zinc-200 rounded h-[90%]'>
+        <div className='border-[0.5px] bg-white border-zinc-200 rounded h-[90%]'>
             {children}
         </div>
     )
@@ -23,7 +23,7 @@ function ButtonWrapper ({children}:any) {
 }
 
 function MenuContent({ toggleMenu, session, buildSessions }: any) {
-
+    console.log(buildSessions, 'bulshit')
     if (!session) return null
 
     const  {email} = session.user
@@ -47,11 +47,11 @@ function MenuContent({ toggleMenu, session, buildSessions }: any) {
             {buildSessions.length > 0 
                         ?
                         buildSessions.map((session:any) => (
-                            <div key={session.id} className='flex items-center space-x-2'>
-                                <Link href={`chat/${session.id}`}>
-                                    {`chat/${session.id}`}
+                            <div key={session.id} className='flex justify-center space-x-2 py- hover:bg-orange-200 transition duration-300'>
+                                <Link className='w-[90%] font-medium text-lg' href={`chat/${session.id}`}>
+                                    {`${session.title}`}
                                 </Link>
-                                
+                                <div></div>
                             </div>
                         ))
                         : 
@@ -66,7 +66,7 @@ function MenuContent({ toggleMenu, session, buildSessions }: any) {
             <div className='space-y-2 h-full'>
                 <ButtonWrapper><h3>Account</h3></ButtonWrapper>
                 <SectionWrapper>
-                    <div className='flex flex-col items-center  h-full'>
+                    <div className='flex flex-col items-center font-medium text-lg  h-full'>
                         {email}
                         <AuthButton setIsOpen={toggleMenu} className='px-[4rem]' session={session}/>
                     </div>
