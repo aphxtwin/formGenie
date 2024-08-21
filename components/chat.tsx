@@ -35,6 +35,7 @@ const ChatPageClient = ({session}:any) => {
       );
       const data = await response.json();
       setLoadedComponents([...Array(data.items.length).keys()].map(e => false));
+      console.log(data, 'data')
       const imports = data.items.map(async (component) => {
       // Construct the import path for each child component
         
@@ -115,57 +116,55 @@ const ChatPageClient = ({session}:any) => {
 
 
     return (
-        <div className="max-h-screen">
-        <div className="bg-neutral-900 border-b-2 border-zinc-600 h-[60px]"></div>
-
-              <div className="flex flex-col md:grid grid-cols-2 gap-1 space-y-10">
+        <div className="max-h-screen flex flex-row">
+          <div className="bg-gray-50 h-screen w-[3.5%] border-r-2"></div>          
+          <div className="flex flex-col md:grid grid-cols-2  gap-1 space-y-10">        
+              <div className="col-span-1 h-[61vh] md:h-[90vh]">
+                  <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-full md:h-[90vh]">
+                  <div className="h-max px-2 pt-5 space-y-5">
+                  {
+                      messages.map((message:any) => (
+                      <div key={message.id}>
+                        {message.display}
+                      </div>
+                    ))
+                  }
                   
-                  <div className="col-span-1 h-[61vh] md:h-[90vh]">
-                      <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-full md:h-[80vh]">
-                      <div className="h-full py-3 px-2 space-y-5">
-                      {
-                          messages.map((message:any) => (
-                          <div key={message.id}>
-                            {message.display}
+                  </div>
+                          <div className="flex justify-center  md:fixed left-[6%] bottom-3">
+                              <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[90vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
                           </div>
-                        ))
-                      }
-                      
-                      </div>
-                              <div className="flex justify-center  md:fixed left-9 bottom-6">
-                                  <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[85vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
-                              </div>
-                      </div>
-                  </div>
-
-                  <div className="col-span-1 h-[50vh] md:h-[80vh]">
-                    <div className="flex flex-col justify-center items-center h-full">
-                      <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
-                      <div className='my-2'>
-                        <div className='flex flex-col items-center justify-center overflow-y-hidden w-[80vw] md:w-[510px] h-[40vh] md:h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
-                          
-                          {loadedComponents.map((component, index) => (
-                            <div className="w-full" key={index}>
-                              {component && component.component !== 'fail' ? (
-                                <div className="">
-                                  <component.component  />
-                                </div>
-                              ) : component && component.component === 'fail' ? (
-                                <p className="text-xs">could not import</p>
-                              ) : (
-                                <p className="text-xs">loading</p>
-                              )}
-                              
-                            </div>
-                          ))}
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   </div>
               </div>
+
+              <div className="col-span-1 h-[50vh] md:h-[80vh]">
+                <div className="flex flex-col justify-center items-center h-full">
+                  <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
+                  <div className='my-2'>
+                    <div className='flex flex-col items-center justify-center overflow-y-hidden w-[80vw] md:w-[510px] h-[40vh] md:h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
+                      
+                      {loadedComponents.map((component, index) => (
+                        <div className="w-full" key={index}>
+                          {component && component.component !== 'fail' ? (
+                            <div className="">
+                              <component.component  />
+                            </div>
+                          ) : component && component.component === 'fail' ? (
+                            <p className="text-xs">could not import</p>
+                          ) : (
+                            <p className="text-xs">loading</p>
+                          )}
+                          
+                        </div>
+                      ))}
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+          </div>
+        </div>
 
 
 

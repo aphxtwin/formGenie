@@ -59,7 +59,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
 
     const [flashlight, setFlashlight] = useState(false)
 
-
+    
     const handleSubmission =  async (e:any) =>{
         e.preventDefault()
         
@@ -81,6 +81,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
             try{
                 const responseMessage = await submitUserMessage({ 
                     content:value,
+                    // tene
                     currentBuildSession:storedInput? storedInput.buildSessionId : null,
                     generationRequest:false 
                     })

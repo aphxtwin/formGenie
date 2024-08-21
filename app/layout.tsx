@@ -11,7 +11,7 @@ variable: "--font-sans",
 
 
 export const metadata: Metadata = {
-  title: "Formaggio 🧀",
+  title: "FormGenie",
   description: "Gain insights from data",
 };
 
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body 
         className={cn(
-          "min-h-screen bg-background font-sans antialiased bg-[#F2F3F4] selection:bg-gray-300",
+          "min-h-screen bg-background font-sans antialiased bg-white selection:bg-gray-300",
           fontSans.variable
         )}
       >
