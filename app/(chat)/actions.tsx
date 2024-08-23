@@ -10,8 +10,7 @@ import { Message, Session, BuildSession } from '@/lib/types';
 import { redirect } from "next/navigation";
 import { createBuildSession, loadBsFromDb, saveMessage } from '../actions';
 import { auth} from '@/auth';
-import { create } from 'domain';
-import { get } from 'http';
+import test from 'node:test';
 
 
 async function generateNewComponent(
@@ -21,12 +20,14 @@ async function generateNewComponent(
 ) {
   'use server';
 
-  
-  const aiState = getMutableAIState<typeof AI>();
-  const penultAiState = aiState.get().messages;
-  const newAiState = [...penultAiState.filter(e=> e.role == 'user').map(e=> e.content), userDescription].join(' ');
-  try{
-    
+  // UPDATE: COULDN'T GET THIS TO WORK.
+  // THINGS THAT ARE A PROBLEM:
+  // 1. THE FUCKING LOCAL STORAGE CAUSES A LOT OF UNECESARY PROBLEMS
+  // 2. THE AI RESPONSE IS NO GUARANTEED TO EXIST AFTER THE FIRST REDIRECTION
+  // 3. THE USER QUERY IS NOT PASSED CORRECTLY
+
+
+  try{ 
     const response = await fetch(
       `http://localhost:3003/components/new/description`,
       {
@@ -39,7 +40,7 @@ async function generateNewComponent(
           framework: `react`,
           components: `shadcn`,
           icons: `lucide`,
-          description: newAiState,
+          description: userDescription,
           json: false,
           buildSession,
           creatorId
@@ -66,13 +67,13 @@ async function submitUserMessage(
   const { content, currentBuildSession, generationRequest } = message;
   const initialBsState = aiState.get().buildSessionId
 
-  // if (!session || !session.user) {
-  //   buildSession = nanoid();
-  //   return {
-  //     type: 'session',
-  //     buildSession
-  //   }
-  // }
+  if (!session || !session.user) {
+    const buildSession = initialBsState;
+    return {
+      type: 'session',
+      buildSession
+    }
+  }
 
   const creatorId = session.user.id;
   
@@ -145,7 +146,6 @@ async function submitUserMessage(
           ...aiState.get().messages.map((message:any) => ({
             role: message.role,
             content: message.content,
-            name: message.name
           }))
         ],
         text: ({ content, done }) => {
@@ -170,11 +170,15 @@ async function submitUserMessage(
           await saveMessage(uniqueId, fullAiText, initialBsState, 'ASSISTANT');
         }
       });
-      return {
+
+       const resultReturn = {
         id:uniqueId,
         display: result.value,
         buildSession:initialBsState
       }
+      console.log(resultReturn, 'resultReturn')
+      return resultReturn
+
     } else {
       console.error('no content')
     }
@@ -210,17 +214,11 @@ export const AI = createAI<AIState, UIState>({
       const aiState = getAIState();
       if (aiState){
         console.log(aiState, 'aiState')
-        const uiState = getUIStateFromAIState(aiState);
+        const uiState = await getUIStateFromAIState(aiState);
         return uiState;
       }
     }
   },
-  /*
-  The AI state can be saved using the [onSetAIState] callback,
-  which gets called whenever the AI state is updated. In the 
-  following example, you save the chat history to a database 
-  whenever the generation is marked as done.
-  */
  onSetAIState: async ({ state })=> {
   'use server';
   const session = (await auth()) as Session;
@@ -249,7 +247,7 @@ export const AI = createAI<AIState, UIState>({
 
 export const getUIStateFromAIState = (aiState: Chat) => {
   
-  return aiState.messages
+  const ui =  aiState.messages
     .filter(message => message.role !== 'system')
     .map((message, index) => ({
       id: `${aiState.buildSessionId}-${index}`,
@@ -260,4 +258,5 @@ export const getUIStateFromAIState = (aiState: Chat) => {
           <AiResponse content={message.content} />
         ),
     }));
+    return ui
 }

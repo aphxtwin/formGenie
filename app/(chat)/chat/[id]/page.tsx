@@ -20,12 +20,11 @@ const ChatPage = async ({params}:ChatPageProps ) => {
     redirect(`/login`);
   }
 
-  const user = session.user;
-  console.log(params.id)
-  const messages = await getMessagesFromBuildSession(params.id)
   
+  const messages = await getMessagesFromBuildSession(params.id)
+  console.log('const messages1 = await getMessagesFromBuildSession(params.id) ->',messages )
   return (
-    <AI initialAIState={{buildSessionId: params.id, messages}}>
+    <AI initialAIState={{buildSessionId: params.id, messages:messages}}>
       <ChatPageClient session={session} />
     </AI>
   )

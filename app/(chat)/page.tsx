@@ -1,4 +1,3 @@
-
 import {auth} from '@/auth';
 import {Session} from "@/lib/types";
 import MainPage from "@/components/mainPage";
@@ -9,7 +8,7 @@ export default async function ChatPage() {
     const session = (await auth()) as Session
 
 
-    const buildSessions = await getAllBuildSessionsFromUser(session.user.id)
+    const buildSessions = await getAllBuildSessionsFromUser(session?.user?.id)
     
 
     return (

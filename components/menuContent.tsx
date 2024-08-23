@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 function SectionWrapper({children}:any) {
     return (
-        <div className='border-[0.5px] bg-white border-zinc-200 rounded h-[90%]'>
+        <div className='border-[0.5px] bg-white border-zinc-200 rounded h-[85%] overflow-y-auto'>
             {children}
         </div>
     )
@@ -29,7 +29,7 @@ function MenuContent({ toggleMenu, session, buildSessions }: any) {
     const  {email} = session.user
 
   return (
-        <div className="py-3 px-4 flex flex-col h-full ">
+        <div className="py-4 px-4 flex flex-col h-full ">
           <button
             onClick={toggleMenu}
             className="self-end text-gray-600 hover:text-gray-800 transition-colors duration-200 mb-6"
@@ -44,10 +44,11 @@ function MenuContent({ toggleMenu, session, buildSessions }: any) {
                     <h3>Library</h3>
             </ButtonWrapper>
             <SectionWrapper>
-            {buildSessions.length > 0 
+                <div className='h-[45vh]'>
+                {buildSessions.length > 0 
                         ?
                         buildSessions.map((session:any) => (
-                            <div key={session.id} className='flex justify-center space-x-2 py- hover:bg-orange-200 transition duration-300'>
+                            <div key={session.id} className='flex justify-center space-x-2 py-4 hover:bg-orange-200 transition duration-300'>
                                 <Link className='w-[90%] font-medium text-lg' href={`chat/${session.id}`}>
                                     {`${session.title}`}
                                 </Link>
@@ -60,6 +61,9 @@ function MenuContent({ toggleMenu, session, buildSessions }: any) {
                             <button className='bg-gradient-to-r font-semibold hover:opacity-80 transition-all duration-300 from-red-500 via-pink-500 to-blue-500 text-white px-3 py-2 rounded' onClick={()=>toggleMenu(false)}>Start a build session!</button>
                         </div>
                     }
+                </div>
+                
+
             </SectionWrapper>
             </div>
 

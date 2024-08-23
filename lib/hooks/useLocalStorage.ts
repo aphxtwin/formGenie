@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 export const useLocalStorage = <T>(
   key: string,// The key under which the value will be stored in localStorage
   initialValue: T  // The initial value to use if no value is found in localStorage
-): [T, (value: T) => void] => { // Returns a tuple with the current value and a setter function
+): [T, (value: T) => void, ()=>void] => { // Returns a tuple with the current value and a setter function
   
   // Create a state variable to hold the value
   const [storedValue, setStoredValue] = useState(initialValue)
@@ -11,13 +11,16 @@ export const useLocalStorage = <T>(
   // This effect runs once when the component mounts
 
   useEffect(() => {
-    // // Try to get the value from localStorage
+    if (typeof window !== 'undefined') {
+      // // Try to get the value from localStorage
     const item = window.localStorage.getItem(key)
     if (item) {
        // If a value is found, parse it from JSON and update the state
       setStoredValue(JSON.parse(item))
     }
     // The effect depends on the 'key', so it will re-run if the key changes
+    }
+    
   }, [key])
 
   // This function updates both the React state and localStorage
@@ -28,8 +31,19 @@ export const useLocalStorage = <T>(
     window.localStorage.setItem(key, JSON.stringify(value))
   }
 
+  const flushLocalStorage = () => {
+    try {
+      setStoredValue(initialValue)
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(key)
+      }
+    } catch (error) {
+      console.error('Error flushing localStorage:', error)
+    }
+  }
+
   // Return the current value and the setter function
-  return [storedValue, setValue]
+  return [storedValue, setValue, flushLocalStorage]
 }
 
 

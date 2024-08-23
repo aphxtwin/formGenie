@@ -55,7 +55,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
         buildSessionId?: string;
     }
     
-    const [storedInput, setStoredInput] = useLocalStorage<StoredInput>('prompt',{})
+    const [storedInput, setStoredInput, flushLocalStorage] = useLocalStorage<StoredInput>('prompt',{})
 
     const [flashlight, setFlashlight] = useState(false)
 
@@ -112,6 +112,9 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
 
     }
 
+    useEffect(()=>{
+        flushLocalStorage()
+    },[])
     
     // useEffect(() => {
     //     if (storedInput) {

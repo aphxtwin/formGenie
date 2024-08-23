@@ -24,10 +24,19 @@ const ChatPageClient = ({session}:any) => {
     const router = useRouter()
     const containsChatSessionId = searchParams.get('chatSessionId')
     // const prompt = JSON.parse(window.localStorage.getItem('prompt') || '')
+  if(messages){
+    console.log(messages, 'messages pedorros con sida')
+  }
+    useEffect(() => {
+        router.refresh()
+    }
+    ,[])
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
     }
+
+
 
     const fetchComponents = async () => {
       const response = await fetch(
@@ -98,7 +107,7 @@ const ChatPageClient = ({session}:any) => {
         }
       ])
       setProcessing(true);
-      // we could set the bsession active here!!
+      //we could set the bsession active here!!
       const res = await submitUserMessage({
         content: userDescription,
         currentBuildSession: prompt.buildSessionId,
@@ -116,62 +125,51 @@ const ChatPageClient = ({session}:any) => {
 
 
     return (
-        <div className="max-h-screen flex flex-row">
-          <div className="bg-gray-50 h-screen w-[3.5%] border-r-2"></div>          
-          <div className="flex flex-col md:grid grid-cols-2  gap-1 space-y-10">        
-              <div className="col-span-1 h-[61vh] md:h-[90vh]">
-                  <div className="flex relative flex-col overflow-y-scroll mx-2 my-1 h-full md:h-[90vh]">
-                  <div className="h-max px-2 pt-5 space-y-5">
-                  {
-                      messages.map((message:any) => (
-                      <div key={message.id}>
-                        {message.display}
-                      </div>
-                    ))
-                  }
-                  
-                  </div>
-                          <div className="flex justify-center  md:fixed left-[6%] bottom-3">
-                              <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[90vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
-                          </div>
-                  </div>
-              </div>
-
-              <div className="col-span-1 h-[50vh] md:h-[80vh]">
-                <div className="flex flex-col justify-center items-center h-full">
-                  <h1 className="text-4xl font-bold text-center flex pt-2 pb-1 capitalize text-neutral-900">Preview your form</h1>
-                  <div className='my-2'>
-                    <div className='flex flex-col items-center justify-center overflow-y-hidden w-[80vw] md:w-[510px] h-[40vh] md:h-[77vh] bg-white rounded-3xl shadow-gray-900/50 shadow-2xl'>
-                      
-                      {loadedComponents.map((component, index) => (
-                        <div className="w-full" key={index}>
-                          {component && component.component !== 'fail' ? (
-                            <div className="">
-                              <component.component  />
-                            </div>
-                          ) : component && component.component === 'fail' ? (
-                            <p className="text-xs">could not import</p>
-                          ) : (
-                            <p className="text-xs">loading</p>
-                          )}
-                          
-                        </div>
-                      ))}
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+       <div className="w-screen h-screen flex">
+        <nav className="w-[3.2rem] bg-gray-100 border-2 "></nav>
+        <div className="w-1/2 h-full pl-[2rem] pt-4 flex flex-col gap-[1.1rem]">
+          {
+            messages.map((message:any) => (
+            <div key={message.id}>
+              {message.display}
+            </div>
+          ))
+          }
+          <div className="flex justify-center  md:fixed left-[6%] bottom-3">
+            <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[90vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
           </div>
         </div>
-
-
-
+        <div className="w-1/2 h-full">
+          {loadedComponents.map((component, index) => (
+                          <div className="w-full flex flex-col justify-center h-screen" key={index}>
+                            {component && component.component !== 'fail' ? (
+                              <div className="">
+                                <component.component  />
+                              </div>
+                            ) : component && component.component === 'fail' ? (
+                              <p className="text-xs">could not import</p>
+                            ) : (
+                              <p className="text-xs">loading</p>
+                            )}
+                            
+                          </div>
+          ))}
+        </div>
+       </div>
     );
 
 
 };
 
 export default ChatPageClient;
+
+
+// {
+//   messages.map((message:any) => (
+//   <div key={message.id}>
+//     {message.display}
+//   </div>
+// ))
+// }
+
 
