@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import { AI } from "./actions";
 
 export default async function ChatLayout({

@@ -10,7 +10,7 @@ import { Message, Session, BuildSession } from '@/lib/types';
 import { redirect } from "next/navigation";
 import { createBuildSession, loadBsFromDb, saveMessage } from '../actions';
 import { auth} from '@/auth';
-import test from 'node:test';
+
 
 
 async function generateNewComponent(
@@ -19,12 +19,6 @@ async function generateNewComponent(
   creatorId: string
 ) {
   'use server';
-
-  // UPDATE: COULDN'T GET THIS TO WORK.
-  // THINGS THAT ARE A PROBLEM:
-  // 1. THE FUCKING LOCAL STORAGE CAUSES A LOT OF UNECESARY PROBLEMS
-  // 2. THE AI RESPONSE IS NO GUARANTEED TO EXIST AFTER THE FIRST REDIRECTION
-  // 3. THE USER QUERY IS NOT PASSED CORRECTLY
 
 
   try{ 
@@ -50,11 +44,19 @@ async function generateNewComponent(
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    console.log(response.json(), 'esta es la puta response de mierda de generateNewComponent');
   }catch(e){
     console.error(e)
   }
 
 
+}
+
+async function justABuildSessionId(){
+  "use server"
+  const aiState = getMutableAIState<typeof AI>();
+  const buildSession = aiState.get().buildSessionId;
+  return buildSession
 }
 
 async function submitUserMessage( 
@@ -64,16 +66,13 @@ async function submitUserMessage(
   'use server';
   const aiState = getMutableAIState<typeof AI>();
   const session = (await auth()) as Session;
-  const { content, currentBuildSession, generationRequest } = message;
+  const { content, generationRequest } = message;
   const initialBsState = aiState.get().buildSessionId
 
-  if (!session || !session.user) {
-    const buildSession = initialBsState;
-    return {
-      type: 'session',
-      buildSession
-    }
-  }
+  // if (notSession) {
+  //   const buildSession = initialBsState;
+  //   return buildSession
+  // }
 
   const creatorId = session.user.id;
   
@@ -90,7 +89,7 @@ async function submitUserMessage(
     content: content
   }
 
-  await saveMessage(userMessage.id, content, initialBsState,'USER');
+  await saveMessage(userMessage.id, content, initialBsState,'user');
 
   aiState.update({
     ...aiState.get(),
@@ -103,12 +102,18 @@ async function submitUserMessage(
 
   // if is a component generation req
   if (generationRequest && initialBsState) {
+    const contenido = aiState.get().messages
+    .filter(message => message.role !== 'system')
+    .map((message) => message.content)
+    .join(' ');
+    console.log(contenido, 'aa me cago en la puta')
     try{
       const a = await generateNewComponent(
-        content,
+        contenido,
         initialBsState,
         creatorId
       )
+      console.log(a, 'Generating a new component from')
       return a
     } catch(e){
       console.error(e)
@@ -140,7 +145,8 @@ async function submitUserMessage(
           make concise and clear questions that a proffessional would ask and
           provide suggestions for the user to make the form better
           make the questions clear and concise don't overwhelm the user
-          The goal is to create an accurate form that meets the user purpose
+          The goal is to fulfill the user query and provide the perfect
+          form for the user
           `,
         messages: [
           ...aiState.get().messages.map((message:any) => ({
@@ -156,7 +162,7 @@ async function submitUserMessage(
               messages: [
                 ...aiState.get().messages,
                 {
-                  id: nanoid(),
+                  id: uniqueId,
                   role: 'assistant',
                   content: fullAiText
                 }
@@ -167,7 +173,7 @@ async function submitUserMessage(
         },
         onFinish: async (text) => {
           // Implement your storage logic here
-          await saveMessage(uniqueId, fullAiText, initialBsState, 'ASSISTANT');
+          await saveMessage(uniqueId, fullAiText, initialBsState, 'assistant');
         }
       });
 
@@ -204,6 +210,7 @@ export type UIState = {
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
+    justABuildSessionId
   },
   initialUIState: [],
   initialAIState: {buildSessionId:nanoid(), messages:[]},
@@ -252,7 +259,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
     .map((message, index) => ({
       id: `${aiState.buildSessionId}-${index}`,
       display:
-        message.role === 'USER' ? (
+        message.role === 'user' ? (
           <UserResponse content={message.content} />
         ) : (
           <AiResponse content={message.content} />

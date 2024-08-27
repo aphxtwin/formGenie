@@ -7,6 +7,8 @@ import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { nanoid } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+
 interface ComponentType {
   component: React.ComponentType;
 }
@@ -15,22 +17,52 @@ const ChatPageClient = ({session}:any) => {
     const [input, setInput] = useState<string>("")
     const [loadedComponents, setLoadedComponents] = useState<ComponentType[]>([]);
     // const [componentVersions, setComponentVersions] = useState([]);
-    const [messages] = useUIState();
     const [aiState] = useAIState();
-    const [_, setMessages] = useUIState<typeof AI>();
+    const [messages, setMessages] = useUIState<typeof AI>();
     const [processing, setProcessing] = useState<boolean>(false);
     const {submitUserMessage, generateNewComponent} = useActions();
     const searchParams = useSearchParams()
     const router = useRouter()
     const containsChatSessionId = searchParams.get('chatSessionId')
-    // const prompt = JSON.parse(window.localStorage.getItem('prompt') || '')
-  if(messages){
-    console.log(messages, 'messages pedorros con sida')
-  }
-    useEffect(() => {
-        router.refresh()
+    const [storedValue, flushLocalStorage] = useLocalStorage('prompt', {})
+    const prompt = storedValue.prompt
+
+
+    const handleFirstQuery = async (userPrompt:string) => {
+      if (userPrompt) {
+        setMessages(currentMessages => [
+          ...currentMessages,
+          {
+            id: nanoid(),
+            display: <UserResponse content={userPrompt}/>
+          }
+        ])
+        try{
+          console.log('first query')
+          const res = await submitUserMessage({
+            content: userPrompt,
+            generationRequest: false
+          })
+          if (res) {
+            console.log('first query res', res)
+            flushLocalStorage('prompt')
+          }
+        } catch(e){
+          console.error(e)
+        }
+      } else{
+        console.log('no prompt')
+      }
     }
-    ,[])
+
+       useEffect(() => {
+
+        if(prompt){
+          handleFirstQuery(prompt)
+        }
+        }, [prompt])
+
+    
 
     const handleInputChange = (e:any) => {
         setInput(e.target.value)
@@ -96,6 +128,7 @@ const ChatPageClient = ({session}:any) => {
       e.preventDefault()
       
       const userDescription = input.trim()
+      
       if (!userDescription) return
       setInput('')
       // Add user message to UI state
@@ -108,15 +141,14 @@ const ChatPageClient = ({session}:any) => {
       ])
       setProcessing(true);
       //we could set the bsession active here!!
-      const res = await submitUserMessage({
-        content: userDescription,
-        currentBuildSession: prompt.buildSessionId,
-        generationRequest: true
-      });
-      if (res) {
-        fetchComponents();
-        setProcessing(false);
-      }
+      // const res = await submitUserMessage({
+      //   content: userDescription,
+      //   generationRequest: true
+      // });
+      // if (res) {
+      //   fetchComponents();
+      //   setProcessing(false);
+      // }
 
     }
 
@@ -127,23 +159,26 @@ const ChatPageClient = ({session}:any) => {
     return (
        <div className="w-screen h-screen flex">
         <nav className="w-[3.2rem] bg-gray-100 border-2 "></nav>
-        <div className="w-1/2 h-full pl-[2rem] pt-4 flex flex-col gap-[1.1rem]">
+        <div className="w-1/2 h-full pl-[2rem] flex flex-col gap-[1.1rem]  pb-[5rem]">
+          <div className="overflow-y-auto pt-4">
           {
             messages.map((message:any) => (
-            <div key={message.id}>
+            <div className="pb-3" key={message.id}>
               {message.display}
             </div>
           ))
           }
+          </div>
+
           <div className="flex justify-center  md:fixed left-[6%] bottom-3">
             <PromptForm className={`${input ? '' : 'h-[58px]' } mb-1 w-[90vw] md:w-[600px]  max-h-[150px] px-5`} isTheFirstMessage={false} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmission}/>
           </div>
         </div>
-        <div className="w-1/2 h-full">
+        <div className="w-1/2 h-full overflow-y-auto overflow-w-hidden border-none">
           {loadedComponents.map((component, index) => (
-                          <div className="w-full flex flex-col justify-center h-screen" key={index}>
+                          <div className="" key={index}>
                             {component && component.component !== 'fail' ? (
-                              <div className="">
+                              <div className="border-none shadow-none">
                                 <component.component  />
                               </div>
                             ) : component && component.component === 'fail' ? (

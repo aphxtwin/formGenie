@@ -86,6 +86,8 @@ export default function LoginForm({ session }: { session: Session }) {
                     autoComplete="current-password"
                     name="password"
                     placeholder="Password"
+                    minLength={8}
+                    maxLength={20}
                     className={inputFieldsStyle}
                     required
                   />

@@ -1,7 +1,6 @@
 import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
 import { Session } from '@/lib/types'
-import { Role } from '@prisma/client'
 import { Prisma } from '@prisma/client'
 import redis from '@/lib/redis';
 
@@ -58,7 +57,7 @@ export async function createBuildSession(buildSession:any) {
 }
 
 
-export async function saveMessage(messageId:string, content:string, buildSessionId:string, role:Role) {
+export async function saveMessage(messageId:string, content:string, buildSessionId:string, role:any) {
     `
     In order to save a message requisites:
     1. The user must be authenticated

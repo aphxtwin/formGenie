@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation';
 import { Session } from '@/lib/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 
-
 interface BuildYourFormProps {
     session: Session
 }
@@ -49,7 +48,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const [_, setMessages] = useUIState<typeof AI>();
     const [disabled, setDisabled] = useState(false);
     const router = useRouter();
-    const {submitUserMessage} = useActions();
+    const {justABuildSessionId} = useActions();
     interface StoredInput {
         prompt?: string;
         buildSessionId?: string;
@@ -58,7 +57,6 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
     const [storedInput, setStoredInput, flushLocalStorage] = useLocalStorage<StoredInput>('prompt',{})
 
     const [flashlight, setFlashlight] = useState(false)
-
     
     const handleSubmission =  async (e:any) =>{
         e.preventDefault()
@@ -78,31 +76,39 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
           ])
         // Submit and get response message
         if(value){
-            try{
-                const responseMessage = await submitUserMessage({ 
-                    content:value,
-                    // tene
-                    currentBuildSession:storedInput? storedInput.buildSessionId : null,
-                    generationRequest:false 
-                    })
+            // try{
+            //     const responseMessage = await submitUserMessage({ 
+            //         content:value,
+            //         currentBuildSession:storedInput? storedInput.buildSessionId : null,
+            //         generationRequest:false 
+            //         })
             
-                if (responseMessage) {
-                    const buildSessionId = responseMessage.buildSession
-                    if(responseMessage.type === 'session') {
-                        // No session but saves the prompt and generates a buildSessionId
-                        setStoredInput({prompt:value,buildSessionId})
-                        router.push(`/login?chatSessionId=${buildSessionId}`)
-                    } else {
-                        setMessages(currentMessages => [...currentMessages, responseMessage])
-                        buildSessionId && setStoredInput({prompt:value,buildSessionId})
-                        router.push(`/chat/${buildSessionId}`)
-                    }
+            //     if (responseMessage) {
+            //         const buildSessionId = responseMessage.buildSession
+            //         if(responseMessage.type === 'session') {
+            //             // No session but saves the prompt and generates a buildSessionId
+            //             setStoredInput({prompt:value,buildSessionId})
+            //             router.push(`/login?chatSessionId=${buildSessionId}`)
+            //         } else {
+            //             setMessages(currentMessages => [...currentMessages, responseMessage])
+            //             buildSessionId && setStoredInput({prompt:value,buildSessionId})
+            //             router.push(`/chat/${buildSessionId}`)
+            //         }
 
-                } else {
-                    console.log('no response message because error')
-                }
-            } catch(e){
-                console.error(e)
+            //     } else {
+            //         console.log('no response message because error')
+            //     }
+            // } catch(e){
+            //     console.error(e)
+            // }
+            const buildSessionId = await justABuildSessionId()
+            if(!session){
+                setStoredInput({prompt:value,buildSessionId})
+                router.push(`/login?chatSessionId=${buildSessionId}`)
+            }
+            else{
+                setStoredInput({prompt:value,buildSessionId})
+                router.push(`/chat/${buildSessionId}`)
             }
         } else {
             console.error('no value or buildSessionId')
