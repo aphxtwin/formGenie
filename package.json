@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.13",
+    "@ai-sdk/openai": "^0.0.54",
     "@auth/prisma-adapter": "^2.4.1",
     "@hookform/resolvers": "^3.3.4",
     "@node-rs/argon2": "^1.8.3",

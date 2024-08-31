@@ -104,20 +104,22 @@ async function submitUserMessage(
   if (generationRequest && initialBsState) {
     const contenido = aiState.get().messages
     .filter(message => message.role !== 'system')
-    .map((message) => message.content)
+    .map((message) => 
+      {`${message.role}:${message.content}`}
+    )
     .join(' ');
     console.log(contenido, 'aa me cago en la puta')
-    try{
-      const a = await generateNewComponent(
-        contenido,
-        initialBsState,
-        creatorId
-      )
-      console.log(a, 'Generating a new component from')
-      return a
-    } catch(e){
-      console.error(e)
-  }
+    // try{
+    //   const a = await generateNewComponent(
+    //     contenido,
+    //     initialBsState,
+    //     creatorId
+    //   )
+    //   console.log(a, 'Generating a new component from')
+    //   return a
+    // } catch(e){
+    //   console.error(e)
+    // }
   }
 
   // if is message
@@ -164,16 +166,18 @@ async function submitUserMessage(
                 {
                   id: uniqueId,
                   role: 'assistant',
-                  content: fullAiText
+                  content
                 }
               ]
             })
+            return <AiResponse content={content}/>
           } 
-          return <AiResponse content={content}/>
+          
         },
         onFinish: async (text) => {
-          // Implement your storage logic here
+          // Storage of the assistant message into database
           await saveMessage(uniqueId, fullAiText, initialBsState, 'assistant');
+
         }
       });
 
@@ -220,8 +224,9 @@ export const AI = createAI<AIState, UIState>({
     if (session && session.user) {
       const aiState = getAIState();
       if (aiState){
-        console.log(aiState, 'aiState')
+        console.log(aiState, 'aiState from onGetUIState')
         const uiState = await getUIStateFromAIState(aiState);
+        
         return uiState;
       }
     }
@@ -231,12 +236,13 @@ export const AI = createAI<AIState, UIState>({
   const session = (await auth()) as Session;
   if (session && session.user) {
     const {buildSessionId, messages} = state;
+    console.log('state from onSetAIState', state)
     const createdAt = new Date()
     const creatorId = session.user.id;
     const path = `/chat/${buildSessionId}`
     const firstMessageContent = messages[0].content as string;
     const title = firstMessageContent.substring(0, 100);
-
+    
     const buildSession : BuildSession = {
       id: buildSessionId,
       title,
@@ -253,7 +259,11 @@ export const AI = createAI<AIState, UIState>({
 });
 
 export const getUIStateFromAIState = (aiState: Chat) => {
-  
+  if(!aiState.messages){
+    console.error('no messages in aiState') ;
+  }else{
+    console.log(aiState.messages, 'messages from getUIStateFromAIState')
+  }
   const ui =  aiState.messages
     .filter(message => message.role !== 'system')
     .map((message, index) => ({
@@ -265,5 +275,6 @@ export const getUIStateFromAIState = (aiState: Chat) => {
           <AiResponse content={message.content} />
         ),
     }));
+  console.log(ui, 'ui from getUIStateFromAIState')
     return ui
 }

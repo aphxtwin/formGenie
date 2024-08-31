@@ -22,7 +22,6 @@ const ChatPage = async ({params}:ChatPageProps ) => {
 
   
   const messages = await getMessagesFromBuildSession(params.id)
-  console.log('const messages1 = await getMessagesFromBuildSession(params.id) ->',messages )
   return (
     <AI initialAIState={{buildSessionId: params.id, messages:messages}}>
       <ChatPageClient session={session} />

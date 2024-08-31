@@ -3,6 +3,7 @@
 import React, {useState, useEffect} from "react";
 import PromptForm from "@/components/prompt-form";
 import UserResponse from "@/components/messageUser";
+import AiResponse from "@/components/messageAI";
 import { useAIState, useActions, useUIState } from 'ai/rsc';
 import { nanoid } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -27,7 +28,7 @@ const ChatPageClient = ({session}:any) => {
     const [storedValue, flushLocalStorage] = useLocalStorage('prompt', {})
     const prompt = storedValue.prompt
 
-
+  console.log(messages.map((m)=>{console.log(m)}), 'messages kkgonos from client')
     const handleFirstQuery = async (userPrompt:string) => {
       if (userPrompt) {
         setMessages(currentMessages => [
@@ -45,6 +46,11 @@ const ChatPageClient = ({session}:any) => {
           })
           if (res) {
             console.log('first query res', res)
+            setMessages((currentMessages:any) => [
+              ...currentMessages,
+              { id: Date.now(), role: 'assistant', display: res.display}
+            ])
+
             flushLocalStorage('prompt')
           }
         } catch(e){
@@ -55,12 +61,37 @@ const ChatPageClient = ({session}:any) => {
       }
     }
 
-       useEffect(() => {
-
-        if(prompt){
-          handleFirstQuery(prompt)
+    const handleSubmission = async (e:any) => {
+      e.preventDefault()
+      const userDescription = input.trim()
+      if (!userDescription) return
+      setInput('')
+      setMessages((currentMessages:any) => [
+        ...currentMessages,
+        {
+          id: nanoid(),
+          display: <UserResponse content={userDescription}/>
         }
-        }, [prompt])
+      ])
+      setProcessing(true);
+      const res = await submitUserMessage({
+        content: userDescription,
+        generationRequest: true
+      });
+      if (res) {
+        console.log('res', res)
+        fetchComponents();
+        setProcessing(false);
+      }
+    }
+
+
+      //  useEffect(() => {
+
+      //   if(prompt){
+      //     handleFirstQuery(prompt)
+      //   }
+      //   }, [prompt])
 
     
 
@@ -124,33 +155,33 @@ const ChatPageClient = ({session}:any) => {
     }
     ,[session, searchParams])
 
-    const handleSubmission =  async (e:any) =>{
-      e.preventDefault()
+    // const handleSubmission =  async (e:any) =>{
+    //   e.preventDefault()
       
-      const userDescription = input.trim()
+    //   const userDescription = input.trim()
       
-      if (!userDescription) return
-      setInput('')
-      // Add user message to UI state
-      setMessages((currentMessages:any) => [
-        ...currentMessages,
-        {
-          id: nanoid(),
-          display: <UserResponse content={userDescription}/>
-        }
-      ])
-      setProcessing(true);
-      //we could set the bsession active here!!
-      // const res = await submitUserMessage({
-      //   content: userDescription,
-      //   generationRequest: true
-      // });
-      // if (res) {
-      //   fetchComponents();
-      //   setProcessing(false);
-      // }
+    //   if (!userDescription) return
+    //   setInput('')
+    //   // Add user message to UI state
+    //   setMessages((currentMessages:any) => [
+    //     ...currentMessages,
+    //     {
+    //       id: nanoid(),
+    //       display: <UserResponse content={userDescription}/>
+    //     }
+    //   ])
+    //   setProcessing(true);
 
-    }
+    //   // const res = await submitUserMessage({
+    //   //   content: userDescription,
+    //   //   generationRequest: false
+    //   // });
+    //   // if (res) {
+    //   //   fetchComponents();
+    //   //   setProcessing(false);
+    //   // }
+
+    // }
 
 
 
@@ -161,13 +192,11 @@ const ChatPageClient = ({session}:any) => {
         <nav className="w-[3.2rem] bg-gray-100 border-2 "></nav>
         <div className="w-1/2 h-full pl-[2rem] flex flex-col gap-[1.1rem]  pb-[5rem]">
           <div className="overflow-y-auto pt-4">
-          {
-            messages.map((message:any) => (
-            <div className="pb-3" key={message.id}>
-              {message.display}
-            </div>
-          ))
-          }
+            {messages.map((message:any) => (
+              <div key={message.id}>
+                {message.display}
+              </div>
+            ))}
           </div>
 
           <div className="flex justify-center  md:fixed left-[6%] bottom-3">
@@ -175,6 +204,11 @@ const ChatPageClient = ({session}:any) => {
           </div>
         </div>
         <div className="w-1/2 h-full overflow-y-auto overflow-w-hidden border-none">
+          {processing && 
+            <div className="h-full text-2xl font-extrabold animate-pulse w-full flex items-center justify-center">
+              <p>Creating the perfect form...</p>
+            </div>
+            }
           {loadedComponents.map((component, index) => (
                           <div className="" key={index}>
                             {component && component.component !== 'fail' ? (

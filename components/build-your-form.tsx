@@ -107,6 +107,7 @@ const BuildYourForm: React.FC<BuildYourFormProps> = ({session}) => {
                 router.push(`/login?chatSessionId=${buildSessionId}`)
             }
             else{
+                
                 setStoredInput({prompt:value,buildSessionId})
                 router.push(`/chat/${buildSessionId}`)
             }

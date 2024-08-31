@@ -129,7 +129,6 @@ export async function getMessagesFromBuildSession(buildSessionId: string) {
             return message
         })
     )
-    console.log('messages kkgongos', messages)
     return messages
 
     
@@ -174,6 +173,8 @@ export const loadBsFromDb = async (bsId:any, userId:any) => {
     };
     
     const messages = await redis.hgetall(`buildSession:${bsId}`)
+    if (!messages) return null;
+    
     console.log('messages', messages)
     return messages
 }
